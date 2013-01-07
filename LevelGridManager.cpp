@@ -30,11 +30,11 @@ LevelGridManager::~LevelGridManager(void)
 {
 }
 
-LevelGrid *LevelGridManager::AddGrid(hgeVector offset)
+LevelGrid *LevelGridManager::AddGrid(hgeVector offset, bool addLevel)
 {
     LevelGrid *l;
     hgeVector pos(offset.x + this->m_Engine->GetWidth(), offset.y + this->m_Engine->GetHeight());
-    l = new LevelGrid(pos, this->m_CameraBoundaries, 10, 40);
+    l = new LevelGrid(pos, this->m_CameraBoundaries, 10, 40, addLevel);
     this->m_World->m_Objects.push_front(l);
 
     return l;
@@ -42,7 +42,7 @@ LevelGrid *LevelGridManager::AddGrid(hgeVector offset)
 
 void LevelGridManager::Initialize(void)
 {
-    this->m_CurrentGrid = this->AddGrid(hgeVector());
+    this->m_CurrentGrid = this->AddGrid(hgeVector(), true);
     this->m_StartGridOffset = hgeVector();
 }
 
@@ -111,7 +111,7 @@ void LevelGridManager::Update(float dt)
     {
         // Create and add a new cell in the upper region
         hgeVector pos = this->m_StartGridOffset; pos.y -= height * cyu;
-        this->AddGrid(pos);
+        this->AddGrid(pos, true);
 
         // Increase the upper cell pointer to indicate that we've just added a cell
         // to the upper region
@@ -125,7 +125,7 @@ void LevelGridManager::Update(float dt)
     {
         // Create and add a new cell in the left region
         hgeVector pos = this->m_StartGridOffset; pos.x -= width * cxl; pos.y -= height * cyu;
-        this->AddGrid(pos);
+        this->AddGrid(pos, false);
 
         // Increase the upper cell pointer to indicate that we've just added a cell
         // to the upper region
@@ -136,7 +136,7 @@ void LevelGridManager::Update(float dt)
     {
         // Create and add a new cell in the right region
         hgeVector pos = this->m_StartGridOffset; pos.x += width * cxr; pos.y -= height * cyu;
-        this->AddGrid(pos);
+        this->AddGrid(pos, false);
 
         // Increase the upper cell pointer to indicate that we've just added a cell
         // to the upper region

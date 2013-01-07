@@ -8,11 +8,13 @@
 unsigned int LevelGrid::StartX = 0;
 unsigned int LevelGrid::StartY = 0;
 
-LevelGrid::LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth, unsigned int splitfactor)
+LevelGrid::LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth, unsigned int splitfactor, bool hasLevel)
 {
-    this->m_NumX        = splitfactor;
-    this->m_NumY        = splitfactor;
-    this->m_LineWidth   = 3.0f;
+    this->m_NumX         = splitfactor;
+    this->m_NumY         = splitfactor;
+    this->m_LineWidth    = 3.0f;
+
+    this->m_HasLevel     = hasLevel;
 
     this->m_ReleaseTimer = 0;
 
@@ -48,23 +50,18 @@ void LevelGrid::InitializeLevel(void)
     // Constructed the grid vertices, now build the level
     for (int i = 0 ; i < this->m_NumY ; ++i)
     {
+        this->m_LeftLevelVertices[i]  = this->m_GridVertices[i][StartX];
+        this->m_RightLevelVertices[i] = this->m_GridVertices[i][StartX + this->m_TrackWidth];
+
         if (i % 2 == 0)
         {
-            int lr = (rand() % 3) - 1;
+            int lr = rand() % 3 - 1;
 
-            if (StartX + lr < this->m_NumX && StartX + lr > 0)
+            if (StartX + lr < (this->m_NumX - this->m_TrackWidth) && StartX + lr > 0)
             {
                 StartX += lr;
             }
         }
-
-        if (StartX + this->m_TrackWidth >= this->m_NumX)
-        {
-            StartX = this->m_NumX - this->m_TrackWidth;
-        }
-
-        this->m_LeftLevelVertices[i]  = this->m_GridVertices[i][StartX];
-        this->m_RightLevelVertices[i] = this->m_GridVertices[i][StartX + this->m_TrackWidth];
     }
 }
 
@@ -193,8 +190,11 @@ void LevelGrid::Initialize(void)
     }
 
     // Initialize level
-    this->InitializeLevel();
-    this->InitializeLevelPhysics();
+    if (this->m_HasLevel)
+    {
+        this->InitializeLevel();
+        this->InitializeLevelPhysics();
+    }
 }
 
 void LevelGrid::Render(float dt)
@@ -261,29 +261,32 @@ void LevelGrid::Render(float dt)
     }
 
     // Render the level
-    for (int i = 0 ; i < this->m_NumY - 1 ; ++i)
+    if (this->m_HasLevel)
     {
-        hgeVector *vec  = this->m_LeftLevelVertices[i];
-        hgeVector *nvec = this->m_LeftLevelVertices[i + 1];
+        for (int i = 0 ; i < this->m_NumY - 1 ; ++i)
+        {
+            hgeVector *vec  = this->m_LeftLevelVertices[i];
+            hgeVector *nvec = this->m_LeftLevelVertices[i + 1];
 
-        this->m_Engine->DrawLine(
-            *vec,
-            *nvec,
-            0xFF70B24C,
-            this->m_LineWidth
-        );
-    }
-    for (int i = 0 ; i < this->m_NumY - 1 ; ++i)
-    {
-        hgeVector *vec  = this->m_RightLevelVertices[i];
-        hgeVector *nvec = this->m_RightLevelVertices[i + 1];
+            this->m_Engine->DrawLine(
+                *vec,
+                *nvec,
+                0xFF70B24C,
+                this->m_LineWidth
+            );
+        }
+        for (int i = 0 ; i < this->m_NumY - 1 ; ++i)
+        {
+            hgeVector *vec  = this->m_RightLevelVertices[i];
+            hgeVector *nvec = this->m_RightLevelVertices[i + 1];
 
-        this->m_Engine->DrawLine(
-            *vec,
-            *nvec,
-            0xFF70B24C,
-            this->m_LineWidth
-        );
+            this->m_Engine->DrawLine(
+                *vec,
+                *nvec,
+                0xFF70B24C,
+                this->m_LineWidth
+            );
+        }
     }
 }
 

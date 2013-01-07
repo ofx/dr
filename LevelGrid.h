@@ -24,6 +24,8 @@ private:
     unsigned int m_NumY;
 
     unsigned int m_TrackWidth;
+
+    bool m_HasLevel;
     
     float m_LineWidth;
 
@@ -38,7 +40,7 @@ public:
     static unsigned int StartX;
     static unsigned int StartY;
 
-    LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth, unsigned int splitfactor);
+    LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth, unsigned int splitfactor, bool hasLevel);
     ~LevelGrid(void);
 
     void Initialize(void);

@@ -27,7 +27,7 @@ public:
     LevelGridManager(void);
     ~LevelGridManager(void);
 
-    LevelGrid *AddGrid(hgeVector offset);
+    LevelGrid *AddGrid(hgeVector offset, bool addLevel);
 
     void Initialize(void);
     void Render(float dt);

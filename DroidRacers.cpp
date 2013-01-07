@@ -123,6 +123,11 @@ bool Engine::FrameFunc(void)
         return true;
     }
 
+    if (this->m_Hge->Input_GetKeyState(HGEK_P)) 
+    {
+        this->m_Hge->System_Snapshot();
+    }
+
     // Get delta time
     float dt = this->m_Hge->Timer_GetDelta();
 
