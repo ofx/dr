@@ -1,4 +1,0 @@
-dr
-==
-
-DroidRacers project
