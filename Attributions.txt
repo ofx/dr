@@ -1,0 +1,18 @@
+DroidRacers
+by Marlon Etheredge
+
+------------------------------------------------------------------------------
+
+This project makes extensive use of the HGE engine:
+http://hge.relishgames.com/
+
+At the time of writing, I utilize the assets coming with the framework:
+Particles.png
+Trail.psi
+
+Starfield texture is a noise map made seamless.
+
+Harmonic music coming from ijs.mtasa.com (Cecill Etheredge), sorry had to rip it
+from SoundCloud, I'll make an effort to get the official version :)
+
+Rest is mine.
