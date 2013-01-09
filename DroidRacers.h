@@ -8,11 +8,14 @@
 #include <string>
 
 class World;
+class ServerConnection;
 
 class Engine
 {
 private:
     static Engine *s_Singleton;
+
+    ServerConnection *m_ServerConnection;
 
     bool         m_Booted;
     bool         m_IsShutdown;

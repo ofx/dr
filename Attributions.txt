@@ -12,6 +12,8 @@ Trail.psi
 
 Starfield texture is a noise map made seamless.
 
+SocketHandle.c & SocketHandle.cpp by Ernest Laurentin, thanks!
+
 Harmonic music coming from ijs.mtasa.com (Cecill Etheredge), sorry had to rip it
 from SoundCloud, I'll make an effort to get the official version :)
 

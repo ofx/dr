@@ -14,7 +14,7 @@ LevelGridManager::LevelGridManager(void)
     this->m_CameraBoundaries = new hgeRect();
 
     // TODO: Find me a place
-    LevelGrid::StartX = 28;
+    LevelGrid::StartX = 15;
     LevelGrid::StartY = 0;
 
     // Set cell pointers
@@ -121,7 +121,7 @@ void LevelGridManager::Update(float dt)
         this->m_LeftCellPointer = 0; this->m_RightCellPointer = 0;
     }
     // Check if we should add a new left cell
-    if (cxl > this->m_LeftCellPointer)
+    /*if (cxl > this->m_LeftCellPointer)
     {
         // Create and add a new cell in the left region
         hgeVector pos = this->m_StartGridOffset; pos.x -= width * cxl; pos.y -= height * cyu;
@@ -141,5 +141,5 @@ void LevelGridManager::Update(float dt)
         // Increase the upper cell pointer to indicate that we've just added a cell
         // to the upper region
         ++this->m_RightCellPointer;
-    }
+    }*/
 }

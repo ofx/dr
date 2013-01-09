@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cJSON.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DroidRacers.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Level.cpp" />
@@ -18,11 +20,13 @@
     <ClCompile Include="LevelGridManager.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="ServerConnection.cpp" />
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cJSON.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DroidRacers.h" />
     <ClInclude Include="GameObject.h" />
@@ -31,6 +35,7 @@
     <ClInclude Include="LevelGridManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="ServerConnection.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="World.h" />
@@ -111,7 +116,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Debug\DroidRacers.exe</OutputFile>
-      <AdditionalDependencies>hge.lib;hgehelp.lib;chipmunkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>hge.lib;hgehelp.lib;chipmunkd.lib;%(AdditionalDependencies);qrcodelib.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -146,7 +151,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Release\DroidRacers.exe</OutputFile>
-      <AdditionalDependencies>chipmunkd.lib;hge.lib;hgehelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>chipmunkd.lib;hge.lib;hgehelp.lib;%(AdditionalDependencies);qrcodelib.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>

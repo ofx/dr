@@ -40,6 +40,9 @@ Engine::Engine(void)
 
 Engine::~Engine(void)
 {
+    // Delete the ServerConnection
+    delete this->m_ServerConnection;
+
     // Delete the world
     delete this->m_World;
 }
@@ -123,6 +126,10 @@ bool Engine::FrameFunc(void)
         return true;
     }
 
+    // Check for pending packets
+    this->m_ServerConnection->ReadAndDispatchData();
+    
+    // Create a screenshot with P
     if (this->m_Hge->Input_GetKeyState(HGEK_P)) 
     {
         this->m_Hge->System_Snapshot();
@@ -186,6 +193,9 @@ bool Engine::RenderFunc(void)
         // Give the world an opportunity to render some text
         this->m_World->RenderText(this->m_DefaultFont, dt);
 
+        // Render the QR code
+        this->m_ServerConnection->RenderQrCode();
+
         // Reset the font data
         this->m_DefaultFont->SetScale(scale);
         this->m_DefaultFont->SetColor(color);
@@ -235,12 +245,18 @@ void Engine::Boot(void)
 	this->m_Hge->System_SetState(HGE_SCREENHEIGHT,   this->m_Height);
 	this->m_Hge->System_SetState(HGE_SCREENBPP,      this->m_Bpp);
 
+    // Expect an ini file at dr.ini
+    this->m_Hge->System_SetState(HGE_INIFILE,        "data/dr.ini");
+
+    // One of the first things to do, set up the ServerConnection, perform handshake and such
+    this->m_ServerConnection = new ServerConnection(this);
+
     // Initiate the system
     this->m_Hge->System_Initiate();
 
     // Load the default font
-    this->m_DefaultFont = new hgeFont("data/DefaultFont.fnt");
-    this->m_DefaultFont->SetScale(0.75f);
+    this->m_DefaultFont = new hgeFont("data/Font.fnt");
+    this->m_DefaultFont->SetScale(1.0f);
     this->m_DefaultFont->SetColor(0xFFE590E5);
 
     // Load the music stream
@@ -269,6 +285,9 @@ void Engine::Boot(void)
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
+    // In case required, initialize debug stuff
+    Debug::InitDebug();
+
 	// Load, initialize, whatever
     Engine *engine = Engine::GetSingleton();
     engine->SetLogFile("DroidRacers.log");

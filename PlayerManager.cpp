@@ -22,7 +22,7 @@ PlayerManager::~PlayerManager(void)
 void PlayerManager::Initialize(void)
 {
     cpVect pos;
-    pos.x = 100.0f;
+    pos.x = 400.0f;
     pos.y = 600.0f;
 
     Player *player = new Player(pos, 0xFFFFA0FF, 0, "Player2");
@@ -46,7 +46,7 @@ void PlayerManager::RenderText(hgeFont *font, float dt)
     font->printf(
         5, 5, 
         HGETEXT_LEFT, 
-        "Players connected: %i\n-------------------",
+        "Players connected: %i\n--------------------",
         this->m_Players.size()
     );
 
@@ -54,7 +54,7 @@ void PlayerManager::RenderText(hgeFont *font, float dt)
     font->printf(
         5, 5 + (this->m_Players.size() + 2) * 20,
         HGETEXT_LEFT,
-        "-------------------"
+        "--------------------"
     );
 
     // Display all player names

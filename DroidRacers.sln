@@ -6,6 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B20D5B27-8661-42AB-AA29-2C9036E4677F}"
 	ProjectSection(SolutionItems) = preProject
 		Attributions.txt = Attributions.txt
+		Debug.cpp = Debug.cpp
 	EndProjectSection
 EndProject
 Global
