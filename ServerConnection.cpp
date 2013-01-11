@@ -240,8 +240,8 @@ ServerConnection::~ServerConnection(void)
     delete this->m_ServerSockAddress;
 
     // Delete the texture and sprite
-    this->m_Engine->GetHge()->Texture_Free(this->m_QrCode);
-    delete this->m_QrCodeSprite;
+    //this->m_Engine->GetHge()->Texture_Free(this->m_QrCode);
+    //delete this->m_QrCodeSprite;
     
     // Close and cleanup
     this->CloseSockets();
@@ -462,6 +462,8 @@ void ServerConnection::ReadAndDispatchData(void)
 
 void ServerConnection::RenderQrCode(void)
 {
-    // Render the QR code
-    this->m_QrCodeSprite->RenderStretch(this->m_Engine->GetWidth() - 220, this->m_Engine->GetHeight() - 220, this->m_Engine->GetWidth() - 20, this->m_Engine->GetHeight() - 20);
+#ifdef false
+        // Render the QR code
+        this->m_QrCodeSprite->RenderStretch(this->m_Engine->GetWidth() - 220, this->m_Engine->GetHeight() - 220, this->m_Engine->GetWidth() - 20, this->m_Engine->GetHeight() - 20);
+#endif
 }

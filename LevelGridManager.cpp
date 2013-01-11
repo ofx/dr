@@ -28,6 +28,8 @@ LevelGridManager::LevelGridManager(void)
 
 LevelGridManager::~LevelGridManager(void)
 {
+    // Housekeeping
+    delete this->m_CameraBoundaries;
 }
 
 LevelGrid *LevelGridManager::AddGrid(hgeVector offset, bool addLevel)

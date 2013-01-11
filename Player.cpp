@@ -31,6 +31,9 @@ Player::~Player(void)
 	delete this->m_ParticleSprite;
 
     // Delete physics stuff
+    cpSpace *space = this->m_Engine->GetWorld()->GetSpace();
+    cpSpaceRemoveShape(space, this->m_Shape);
+    cpSpaceRemoveBody(space, this->m_Body);
     cpShapeFree(this->m_Shape);
     cpBodyFree(this->m_Body);
 }

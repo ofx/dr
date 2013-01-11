@@ -226,12 +226,12 @@ void Engine::DrawLine(hgeVector p1, hgeVector p2, DWORD color, float width, int 
 
 void Engine::Shutdown(void)
 {
+    // Indicate that we've shutdown
+    this->m_IsShutdown = true;
+
     // Clean up and shutdown
 	this->m_Hge->System_Shutdown();
 	this->m_Hge->Release();
-
-    // Indicate that we've shutdown
-    this->m_IsShutdown = true;
 }
 
 void Engine::Boot(void)

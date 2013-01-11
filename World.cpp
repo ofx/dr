@@ -32,7 +32,7 @@ World::~World(void)
     this->m_Objects.clear();
 
     // Delete physics stuff
-    //cpSpaceFree(this->m_Space);
+    cpSpaceFree(this->m_Space);
 }
 
 void World::RemoveGameObject(GameObject *object)

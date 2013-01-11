@@ -34,11 +34,30 @@ LevelGrid::~LevelGrid(void)
     delete this->m_BackgroundQuad;
     
     // Remove grid vertices
-    for (int y = 0 ; y < this->m_NumY ; ++y)
+    for (int y = 0 ; y <= this->m_NumY ; ++y)
     {
+        for (int x = 0 ; x <= this->m_NumX ; ++x)
+        {
+            delete this->m_GridVertices[y][x];
+        }
         delete this->m_GridVertices[y];
     }
     delete this->m_GridVertices;
+
+    // Free the physics shapes and body
+    std::list<cpShape*>::const_iterator it;
+    cpSpace *space = this->m_Engine->GetWorld()->GetSpace();
+    for (it = this->m_Shapes.begin() ; it != this->m_Shapes.end() ; ++it)
+    {
+        cpSpaceRemoveShape(space, *it);
+        cpShapeFree(*it);
+    }
+    this->m_Shapes.clear();
+    delete this->m_Body;
+
+    // Free the left and right vertex memory
+    delete this->m_LeftLevelVertices;
+    delete this->m_RightLevelVertices;
 }
 
 void LevelGrid::InitializeLevel(void)
@@ -71,7 +90,7 @@ void LevelGrid::InitializeLevelPhysics(void)
     cpSpace *space = this->m_Engine->GetWorld()->GetSpace();
 
     // Add the physics body
-    cpBody *body = cpBodyNew(INFINITY, INFINITY);
+    this->m_Body = cpBodyNewStatic();
         
     // Add the physics shapes
     for (int i = 0 ; i < this->m_NumY - 1 ; ++i)
@@ -79,18 +98,22 @@ void LevelGrid::InitializeLevelPhysics(void)
         hgeVector *vec  = this->m_LeftLevelVertices[i];
         hgeVector *nvec = this->m_LeftLevelVertices[i + 1];
 
-        cpShape *shape = cpSegmentShapeNew(body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
+        cpShape *shape = cpSegmentShapeNew(this->m_Body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
         shape->e = 1.0; shape->u = 1.0;
         cpSpaceAddStaticShape(space, shape);
+        cpBodyActivateStatic(this->m_Body, shape);
+        this->m_Shapes.push_back(shape);
     }
     for (int i = 0 ; i < this->m_NumY - 1 ; ++i)
     {
         hgeVector *vec  = this->m_RightLevelVertices[i];
         hgeVector *nvec = this->m_RightLevelVertices[i + 1];
         
-        cpShape *shape = cpSegmentShapeNew(body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
+        cpShape *shape = cpSegmentShapeNew(this->m_Body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
         shape->e = 1.0; shape->u = 1.0;
         cpSpaceAddStaticShape(space, shape);
+        cpBodyActivateStatic(this->m_Body, shape);
+        this->m_Shapes.push_back(shape);
     }
 }
 

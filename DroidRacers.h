@@ -49,7 +49,7 @@ public:
     bool RenderFunc(void);
 
     // Some additional rendering functions
-    void DrawLine(hgeVector a, hgeVector b,DWORD color,float width = 1.0f,int blend = BLEND_DEFAULT);
+    void DrawLine(hgeVector a, hgeVector b, DWORD color, float width = 1.0f, int blend = BLEND_DEFAULT);
 
     HGE *GetHge(void);
 
