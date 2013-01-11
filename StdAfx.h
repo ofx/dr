@@ -18,6 +18,7 @@
 // Stdlib
 #include <stdlib.h>
 #include <string>
+#include <time.h>
 
 // DirectX (need this to extend the functionality of HGE core a bit)
 #include <d3d10.h>

@@ -211,6 +211,12 @@ ServerConnection::ServerConnection(Engine *engine)
     this->m_ServerPort    = "7223";
     this->m_ServerAddress = "127.0.0.1";
     
+    // Initialize the QR code sprite
+    this->m_QrCode = 0;
+
+    // Indicate that we're not yet connected
+    this->m_IsConnected = false;
+
     // Define address components
     unsigned int a[4];
     unsigned int i = 0;
@@ -239,10 +245,14 @@ ServerConnection::~ServerConnection(void)
     // Delete stuff
     delete this->m_ServerSockAddress;
 
-    // Delete the texture and sprite
-    //this->m_Engine->GetHge()->Texture_Free(this->m_QrCode);
-    //delete this->m_QrCodeSprite;
-    
+    // Avoid bad access
+    if (this->m_IsConnected)
+    {
+        // Delete the texture and sprite
+        this->m_Engine->GetHge()->Texture_Free(this->m_QrCode);
+        delete this->m_QrCodeSprite;
+    }    
+
     // Close and cleanup
     this->CloseSockets();
 }
@@ -437,6 +447,10 @@ bool ServerConnection::Initialize(void)
     DWORD datal = strlen(handshake.GetString());
     this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
 
+    // Update the last transmission time (only once use this field for transmission in the direction of the
+    // server to determine the initial connection time)
+    time(&this->m_LastTransmission);
+
     return true;
 }
 
@@ -456,14 +470,87 @@ void ServerConnection::ReadAndDispatchData(void)
     // In case we've received data, dispatch the data
     if (recv > 0)
     {
+        // Update the last transmission time
+        time(&this->m_LastTransmission);
+
         this->Dispatch((char *)data, size);
+    }
+}
+
+void ServerConnection::Update(float dt)
+{
+    // Get the current time to display in the overlay
+    time_t now;
+    time(&now);
+
+    // Time since last transmission
+    int secondsSinceTrans = now - this->m_LastTransmission;
+    
+    // Check for initial timeout
+    if (!this->m_IsConnected && secondsSinceTrans >= SERVER_CONNECTION_TIMEOUT)
+    {
+        // Timeout, exit
+        this->m_Engine->Shutdown();
+    }
+}
+
+void ServerConnection::Render(hgeFont *font, float dt)
+{
+    // In case we're not yet connected, render an overlay
+    if (!this->m_IsConnected)
+    {
+        // Get the current time to display in the overlay
+        time_t now;
+        time(&now);
+
+        // Time since initialization
+        int secondsSinceInit = now - this->m_LastTransmission;
+
+        // Construct and render the overlay
+        hgeQuad *overlay = new hgeQuad();
+        overlay->tex    = 0;
+        overlay->blend  = BLEND_DEFAULT_Z;
+        overlay->v[0].x = 0;                          overlay->v[0].y = 0;                           overlay->v[0].col = 0xB4000000;
+        overlay->v[1].x = this->m_Engine->GetWidth(); overlay->v[1].y = 0;                           overlay->v[1].col = 0xB4000000;
+        overlay->v[2].x = this->m_Engine->GetWidth(); overlay->v[2].y = this->m_Engine->GetHeight(); overlay->v[2].col = 0xB4000000;
+        overlay->v[3].x = 0;                          overlay->v[3].y = this->m_Engine->GetHeight(); overlay->v[3].col = 0xB4000000; 
+
+        this->m_Engine->GetHge()->Gfx_RenderQuad(overlay);
+        delete overlay;
+
+        // Create a funky dotted time string
+        std::string timeDotString("");
+        for (int i = 0 ; i < secondsSinceInit ; ++i)
+        {
+            timeDotString += '.';
+        }
+
+        // In case we're at .5 of timeout time, display a warning
+        char b[50] = "";
+        if (secondsSinceInit >= SERVER_CONNECTION_TIMEOUT * 0.5f)
+        {
+            sprintf(b, "Timing out in %i seconds", (SERVER_CONNECTION_TIMEOUT - secondsSinceInit));
+        }
+
+        // Render text indicating that we're waiting and how long we're waiting before we're going to kill
+        // the game due to a timeout
+        font->printf(
+            this->m_Engine->GetWidth() * 0.5f,
+            this->m_Engine->GetHeight() * 0.5f,
+            HGETEXT_CENTER,
+            "DroidRacers\nWaiting for a connection to the server\n%s\n\n%s",
+            timeDotString.c_str(),
+            b
+        );
     }
 }
 
 void ServerConnection::RenderQrCode(void)
 {
-#ifdef false
+    // Avoid bad access
+    if (this->m_IsConnected)
+    {
         // Render the QR code
         this->m_QrCodeSprite->RenderStretch(this->m_Engine->GetWidth() - 220, this->m_Engine->GetHeight() - 220, this->m_Engine->GetWidth() - 20, this->m_Engine->GetHeight() - 20);
-#endif
+    }
 }

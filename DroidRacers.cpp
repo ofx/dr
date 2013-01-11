@@ -126,9 +126,6 @@ bool Engine::FrameFunc(void)
         return true;
     }
 
-    // Check for pending packets
-    this->m_ServerConnection->ReadAndDispatchData();
-    
     // Create a screenshot with P
     if (this->m_Hge->Input_GetKeyState(HGEK_P)) 
     {
@@ -137,6 +134,9 @@ bool Engine::FrameFunc(void)
 
     // Get delta time
     float dt = this->m_Hge->Timer_GetDelta();
+
+    // Check for pending packets
+    this->m_ServerConnection->Update(dt);
 
     // Update the world
     this->m_World->Update(dt);
@@ -199,6 +199,9 @@ bool Engine::RenderFunc(void)
         // Reset the font data
         this->m_DefaultFont->SetScale(scale);
         this->m_DefaultFont->SetColor(color);
+
+        // Let ServerConnection render some stuff (in case we're not connected)
+        this->m_ServerConnection->Render(this->m_DefaultFont, dt);
 
     // End of scene
     this->m_Hge->Gfx_EndScene();

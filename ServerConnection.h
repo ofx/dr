@@ -1,9 +1,11 @@
 #pragma once
 
-#define PROTOCOL_VERSION     0
+#define PROTOCOL_VERSION          0
 
-#define RESPONSE_TIMEOUT     10000
-#define RESPONSE_BUFFER_SIZE 1024
+#define RESPONSE_TIMEOUT          10000
+#define RESPONSE_BUFFER_SIZE      1024
+
+#define SERVER_CONNECTION_TIMEOUT 20
 
 #include <string>
 
@@ -71,24 +73,29 @@ private:
 
     bool         m_IsConnected;
 
+    time_t       m_LastTransmission;
+
     void EncodeQrcodeToPng(QRcode *qrcode);
 
     bool InitializeSockets(void);
     bool CreateSockets(void);
     void CloseSockets(void);
 
+    void ReadAndDispatchData(void);
+    void Dispatch(char *data, unsigned int size);
+    bool SendData(const char *data, unsigned int size, sockaddr *address);
+
+    bool Initialize(void);
+
     void NewGame(Packet &packet);
 public:
     ServerConnection(Engine *engine);
     ~ServerConnection(void);
 
-    void Dispatch(char *data, unsigned int size);
+    bool IsConnected(void) {return this->m_IsConnected;}
 
-    bool SendData(const char *data, unsigned int size, sockaddr *address);
-    void ReadAndDispatchData(void);
-
-    bool Initialize(void);
-
+    void Update(float dt);
+    void Render(hgeFont *font, float dt);
     void RenderQrCode(void);
 };
 
