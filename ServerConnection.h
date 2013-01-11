@@ -68,8 +68,8 @@ private:
 
     std::string  m_GameUuid;
 
-    char        *m_ServerAddress;
-    char        *m_ServerPort;
+    char         m_ServerAddress[100];
+    char         m_ServerPort[100];
 
     bool         m_IsConnected;
 

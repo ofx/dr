@@ -205,12 +205,13 @@ ServerConnection::ServerConnection(Engine *engine)
     this->m_Engine = engine;
 
     // Load the required connection information
-    this->m_ServerAddress = this->m_Engine->GetHge()->Ini_GetString("ServerConnection", "Address", "127.0.0.1");
-    this->m_ServerPort    = this->m_Engine->GetHge()->Ini_GetString("ServerConnection", "Port",    "7223");
-
-    this->m_ServerPort    = "7223";
-    this->m_ServerAddress = "127.0.0.1";
+    char *b;
+    b = this->m_Engine->GetHge()->Ini_GetString("connection", "address", "unset");
+    memcpy(this->m_ServerAddress, b, strlen(b) + 1);
     
+    b = this->m_Engine->GetHge()->Ini_GetString("connection", "port",    "unset");
+    memcpy(this->m_ServerPort, b, strlen(b) + 1);
+
     // Initialize the QR code sprite
     this->m_QrCode = 0;
 
