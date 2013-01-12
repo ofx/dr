@@ -30,7 +30,7 @@ private:
     cpSpace *m_Space;
 
     LevelGridManager *m_LevelManager;
-    PlayerManager *m_PlayerManager;
+    PlayerManager    *m_PlayerManager;
 
     std::list<GameObject*> m_DeletionList;
     std::list<GameObject*> m_Objects;
@@ -43,6 +43,10 @@ public:
     cpSpace *GetSpace(void)
     {
         return this->m_Space;
+    }
+    PlayerManager *GetPlayerManager(void)
+    {
+        return this->m_PlayerManager;
     }
 
     void CameraTranspose(cpVect *pos);

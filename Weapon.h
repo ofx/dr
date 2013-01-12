@@ -5,10 +5,16 @@
 
 #pragma once
 
-class Weapon : public GameObject
+#include <string>
+
+class Weapon
 {
 public:
-    Weapon(void);
-    ~Weapon(void);
-};
+    const std::string WeaponName;
+    const std::string WeaponShortName;
 
+    Weapon(std::string name, std::string shortName);
+    virtual ~Weapon(void);
+
+    virtual void Shoot(void) = 0;
+};

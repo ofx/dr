@@ -20,7 +20,7 @@ Packet::Packet(void)
 
 Packet::~Packet(void)
 {
-    cJSON_Delete(this->m_Data); this->m_Data = 0;
+    cJSON_Delete(this->m_Data);
 }
 
 void Packet::FromString(const char *data)
@@ -351,6 +351,9 @@ void ServerConnection::NewGame( Packet &packet )
     this->m_QrCodeSprite = new hgeSprite(this->m_QrCode, 0, 0, qrcode->width, qrcode->width);
 
     QRcode_free(qrcode);
+
+    // Indicate that the game is connected
+    this->m_IsConnected = true;
 }
 
 void ServerConnection::Dispatch(char *data, unsigned int size)
@@ -363,7 +366,7 @@ void ServerConnection::Dispatch(char *data, unsigned int size)
     std::string cid; bool hasCid = in.GetStringValue( "cid", cid );
 
     // In case we've received an error packet, log directly to our log
-    if (in.GetPacketType() == Error || !hasCid)
+    if (in.GetPacketType() == Error)
     {
         std::string errorMessage; in.GetStringValue("error", errorMessage);
         this->m_Engine->GetHge()->System_Log(errorMessage.c_str());
@@ -417,6 +420,7 @@ void ServerConnection::Dispatch(char *data, unsigned int size)
                 char *data  = ping.GetString();
                 DWORD datal = strlen(data);
                 this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
+                delete data;
 			}
 		}
     }
@@ -447,6 +451,7 @@ bool ServerConnection::Initialize(void)
     char *data  = handshake.GetString();
     DWORD datal = strlen(handshake.GetString());
     this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
+    delete data;
 
     // Update the last transmission time (only once use this field for transmission in the direction of the
     // server to determine the initial connection time)
@@ -480,18 +485,24 @@ void ServerConnection::ReadAndDispatchData(void)
 
 void ServerConnection::Update(float dt)
 {
-    // Get the current time to display in the overlay
-    time_t now;
-    time(&now);
+    // Read and dispatch
+    this->ReadAndDispatchData();
 
-    // Time since last transmission
-    int secondsSinceTrans = now - this->m_LastTransmission;
-    
-    // Check for initial timeout
-    if (!this->m_IsConnected && secondsSinceTrans >= SERVER_CONNECTION_TIMEOUT)
+    if (!this->m_IsConnected)
     {
-        // Timeout, exit
-        this->m_Engine->Shutdown();
+        // Get the current time to display in the overlay
+        time_t now;
+        time(&now);
+
+        // Time since last transmission
+        int secondsSinceTrans = now - this->m_LastTransmission;
+    
+        // Check for initial timeout
+        if (secondsSinceTrans >= SERVER_CONNECTION_TIMEOUT)
+        {
+            // Timeout, exit
+            this->m_Engine->Shutdown();
+        }
     }
 }
 
@@ -530,7 +541,7 @@ void ServerConnection::Render(hgeFont *font, float dt)
         char b[50] = "";
         if (secondsSinceInit >= SERVER_CONNECTION_TIMEOUT * 0.5f)
         {
-            sprintf(b, "Timing out in %i seconds", (SERVER_CONNECTION_TIMEOUT - secondsSinceInit));
+            sprintf_s(b, "Timing out in %i seconds", (SERVER_CONNECTION_TIMEOUT - secondsSinceInit));
         }
 
         // Render text indicating that we're waiting and how long we're waiting before we're going to kill

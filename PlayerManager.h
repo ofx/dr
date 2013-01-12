@@ -14,10 +14,15 @@ class PlayerManager : public GameObject
 private:
     World *m_World;
 
-    std::list<Player*> m_Players;
+    std::list<Player*> *m_Players;
 public:
     PlayerManager(void);
     ~PlayerManager(void);
+
+    std::list<Player*> *GetPlayers(void)
+    {
+        return this->m_Players;
+    }
 
     void Initialize(void);
     void Render(float dt);

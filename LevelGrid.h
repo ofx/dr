@@ -7,6 +7,17 @@
 
 #include <map>
 
+#define NUM_ACTIVATORS       2
+#define ACTIVATOR_TYPE_FIRE  0
+#define ACTIVATOR_TYPE_BOOST 1
+
+typedef struct Activator
+{
+    unsigned int  ActivatorType;
+    hgeVector     Vertices[4];
+    Player       *Owner;
+} Activator;
+
 class LevelGrid : public GameObject
 {
 private:
@@ -14,6 +25,8 @@ private:
     HTEXTURE m_StarfieldTexture;
 
     hgeQuad *m_BackgroundQuad;
+
+    PlayerManager *m_PlayerManager;
 
     cpBody             *m_Body;
     std::list<cpShape*> m_Shapes;
@@ -29,9 +42,15 @@ private:
     
     float m_LineWidth;
 
+    unsigned int m_NumActivators;
+    Activator **m_Activators;
+
     hgeVector m_Offset;
     hgeRect   m_Boundaries;
     hgeRect  *m_CameraBoundaries;
+
+    unsigned int *m_LeftLevelIndices;
+    unsigned int *m_RightLevelIndices;
 
     hgeVector **m_LeftLevelVertices;
     hgeVector **m_RightLevelVertices;

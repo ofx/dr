@@ -14,6 +14,8 @@ LevelGrid::LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth
     this->m_NumY         = splitfactor;
     this->m_LineWidth    = 3.0f;
 
+    this->m_PlayerManager = this->m_Engine->GetWorld()->GetPlayerManager();
+
     this->m_HasLevel     = hasLevel;
 
     this->m_ReleaseTimer = 0;
@@ -44,6 +46,13 @@ LevelGrid::~LevelGrid(void)
     }
     delete this->m_GridVertices;
 
+    // Delete the activators
+    for (int i = 0 ; i < this->m_NumActivators ; ++i)
+    {
+        delete this->m_Activators[i];
+    }
+    delete this->m_Activators;
+
     // Free the physics shapes and body
     std::list<cpShape*>::const_iterator it;
     cpSpace *space = this->m_Engine->GetWorld()->GetSpace();
@@ -54,6 +63,10 @@ LevelGrid::~LevelGrid(void)
     }
     this->m_Shapes.clear();
     delete this->m_Body;
+
+    // Free the left and right index memory
+    delete this->m_LeftLevelIndices;
+    delete this->m_RightLevelIndices;
 
     // Free the left and right vertex memory
     delete this->m_LeftLevelVertices;
@@ -66,12 +79,25 @@ void LevelGrid::InitializeLevel(void)
     this->m_LeftLevelVertices  = (hgeVector**) malloc(sizeof(hgeVector*) * this->m_NumY);
     this->m_RightLevelVertices = (hgeVector**) malloc(sizeof(hgeVector*) * this->m_NumY);
 
+    // Create some storage for track indices
+    this->m_LeftLevelIndices  = (unsigned int*) malloc(sizeof(unsigned int) * this->m_NumY);
+    this->m_RightLevelIndices = (unsigned int*) malloc(sizeof(unsigned int) * this->m_NumY);
+
+    // Retrieve the list of players to generate activators
+    std::list<Player*> *p = this->m_PlayerManager->GetPlayers();
+
     // Constructed the grid vertices, now build the level
     for (int i = 0 ; i < this->m_NumY ; ++i)
     {
+        // Construct the left and right vertexlist
         this->m_LeftLevelVertices[i]  = this->m_GridVertices[i][StartX];
         this->m_RightLevelVertices[i] = this->m_GridVertices[i][StartX + this->m_TrackWidth];
 
+        // Store indices
+        this->m_LeftLevelIndices[i]  = StartX;
+        this->m_RightLevelIndices[i] = StartX + this->m_TrackWidth;
+
+        // Only create a "turn" every 2 vertices vertical
         if (i % 2 == 0)
         {
             int lr = rand() % 3 - 1;
@@ -81,6 +107,83 @@ void LevelGrid::InitializeLevel(void)
                 StartX += lr;
             }
         }
+    }
+
+    
+    // Create a vector from the list, we need direct lookup
+    std::vector<Player*> players(p->begin(), p->end());
+    
+    // Determine the vertical distribution for activators
+    int verticalDistribution = this->m_NumY / (players.size() * NUM_ACTIVATORS);
+
+    // Create the activator array
+    this->m_Activators = (Activator**) malloc(sizeof(Activator*) * (this->m_NumActivators = NUM_ACTIVATORS * players.size()));
+
+    // This feels a bit hackish...
+    std::vector<std::vector<unsigned int>> activatorTypes;
+    for (int i = 0 ; i < players.size() ; ++i)
+    {
+        std::vector<unsigned int> activators;
+        for (int j = 0 ; j < NUM_ACTIVATORS ; ++j)
+        {
+            activators.push_back(j);
+        }
+        std::random_shuffle(activators.begin(), activators.end());
+        activatorTypes.push_back(activators);
+    }
+    std::random_shuffle(activatorTypes.begin(), activatorTypes.end());
+
+    // Retrieve viewport
+    unsigned int width = this->m_Engine->GetWidth();
+    unsigned int height = this->m_Engine->GetHeight();
+
+    // Determine deltas
+    float dx = width / this->m_NumX;
+    float dy = height / this->m_NumY;
+
+    // Run through the players and then run though activators to make sure that
+    // we're never generating two activators for one player in sequence
+    int y = 0;
+    int n = 0;
+    std::vector<std::vector<unsigned int>>::const_iterator it;
+    for (int i = 0 ; i < NUM_ACTIVATORS ; ++i)
+    {
+        int k = 0;
+        for (it = activatorTypes.begin() ; it != activatorTypes.end() ; ++it)
+        {
+            // Fetch a random int between left and right on track y
+            int x = (rand() % ((this->m_RightLevelIndices[y] - 1) - (this->m_LeftLevelIndices[y] + 1))) + (this->m_LeftLevelIndices[y] + 1);
+        
+            // Fetch the activator type pointed to by i
+            unsigned int activatorType = (*it).at(i);
+
+            // Get the selected vertex
+            hgeVector *vec = this->m_GridVertices[y][x];
+
+            // Create a new activator instance
+            Activator *activator = new Activator();
+
+            // Set the type
+            activator->ActivatorType = activatorType;
+
+            // Set the owner
+            activator->Owner = players.at(k++);
+            
+            // Define the vertices
+            activator->Vertices[0] = *vec; activator->Vertices[1] = *vec;
+            activator->Vertices[2] = *vec; activator->Vertices[3] = *vec;
+
+            // Offset the vertices conform winding
+            activator->Vertices[1].x -= dx;
+            activator->Vertices[2].x -= dx; activator->Vertices[2].y -= dy;
+            activator->Vertices[3].y -= dy;
+
+            // Add the activator
+            this->m_Activators[n++] = activator;
+        }
+
+        // Increase the vertical pointer
+        y += verticalDistribution;
     }
 }
 
@@ -310,6 +413,26 @@ void LevelGrid::Render(float dt)
                 this->m_LineWidth
             );
         }
+    }
+
+    // Render the activators
+    for (int i = 0 ; i < this->m_NumActivators ; ++i)
+    {
+        Activator *activator = this->m_Activators[i];
+
+        DWORD color = activator->Owner->GetColor();
+        color &= 0xB4FFFFFF;
+    
+        hgeQuad *activatorQuad = new hgeQuad();
+        activatorQuad->tex    = 0;
+        activatorQuad->blend  = BLEND_DEFAULT_Z;
+        activatorQuad->v[0].x = activator->Vertices[0].x; activatorQuad->v[0].y = activator->Vertices[0].y; activatorQuad->v[0].col = color;
+        activatorQuad->v[1].x = activator->Vertices[1].x; activatorQuad->v[1].y = activator->Vertices[1].y; activatorQuad->v[1].col = color;
+        activatorQuad->v[2].x = activator->Vertices[2].x; activatorQuad->v[2].y = activator->Vertices[2].y; activatorQuad->v[2].col = color;
+        activatorQuad->v[3].x = activator->Vertices[3].x; activatorQuad->v[3].y = activator->Vertices[3].y; activatorQuad->v[3].col = color;
+
+        this->m_Engine->GetHge()->Gfx_RenderQuad(activatorQuad);
+        delete activatorQuad;
     }
 }
 

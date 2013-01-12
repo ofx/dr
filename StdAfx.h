@@ -6,7 +6,7 @@
 #pragma once
 
 // Die warnings
-#pragma warning( disable : 4099 4244 4018 4966 )
+#pragma warning( disable : 4099 4244 4018 4966 4996 )
 
 // WinSock
 #include <winsock2.h>
@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string>
 #include <time.h>
+#include <vector>
 
 // DirectX (need this to extend the functionality of HGE core a bit)
 #include <d3d10.h>
@@ -40,6 +41,9 @@
 
 // DroidRacers
 #include "GameObject.h"
+#include "PhysicsObject.h"
+#include "Weapon.h"
+#include "Neoshooter.h"
 #include "Player.h"
 #include "LevelGridManager.h"
 #include "PlayerManager.h"

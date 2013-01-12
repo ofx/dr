@@ -15,6 +15,8 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DroidRacers.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Neoshooter.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="LevelGrid.cpp" />
     <ClCompile Include="LevelGridManager.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -29,6 +31,8 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DroidRacers.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Neoshooter.h" />
+    <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="LevelGrid.h" />
     <ClInclude Include="LevelGridManager.h" />
     <ClInclude Include="Player.h" />

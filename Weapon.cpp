@@ -7,7 +7,7 @@
 
 #include "Weapon.h"
 
-Weapon::Weapon(void)
+Weapon::Weapon(std::string name, std::string shortName) : WeaponName(name), WeaponShortName(shortName)
 {
 }
 

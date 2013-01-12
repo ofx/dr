@@ -57,13 +57,13 @@ void World::Initialize(void)
     // Determine the grid size
     float gridSize = this->m_Engine->GetWidth() / 20;
 
-    // Create the grid manager
-    this->m_LevelManager = new LevelGridManager();
-    this->m_Objects.push_back(this->m_LevelManager);
-
     // Create the player manager
     this->m_PlayerManager = new PlayerManager();
     this->m_Objects.push_back(this->m_PlayerManager);
+
+    // Create the grid manager
+    this->m_LevelManager = new LevelGridManager();
+    this->m_Objects.push_back(this->m_LevelManager);
 }
 
 void World::Render(float dt)

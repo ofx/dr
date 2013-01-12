@@ -5,10 +5,12 @@
 
 #pragma once
 
+#define NUM_WEAPON_SLOTS 2
+
 class cpBody;
 class cpShape;
 
-class Player : public GameObject
+class Player : public PhysicsObject
 {
 private:
     HTEXTURE m_Texture;
@@ -24,6 +26,9 @@ private:
     cpShape *m_Shape;
 
     DWORD m_Color;
+
+    Weapon **m_Weaponslots;
+    int m_ActiveWeaponslot;
 
     float m_Speed;
 
@@ -47,6 +52,11 @@ public:
         return this->m_Color;
     }
 
+    int BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data);
+    int PreCollision(cpArbiter *arb, struct cpSpace *space, void *data);
+    void PostCollision(cpArbiter *arb, struct cpSpace *space, void *data);
+    void SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data);
+
     void SetSpeed(float speed);
 
     // Provide an interface to sort the ranking of players
@@ -55,5 +65,7 @@ public:
     void Initialize(void);
     void Render(float dt);
     void Update(float dt);
+
+    friend class PlayerManager;
 };
 

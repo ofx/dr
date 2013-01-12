@@ -13,12 +13,14 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
     this->m_PlayerIndex = index;
     this->m_Name = name;
 
+    this->m_ActiveWeaponslot = 0;
+
     this->m_Position = new cpVect(position);
 
     this->m_DeltaX = 0.0f;
     this->m_DeltaY = 0.0f;
 
-    this->m_Speed = 0.9;
+    this->m_Speed = 0.9f;
 
     // Initialize the player
     this->Initialize();
@@ -29,6 +31,13 @@ Player::~Player(void)
     delete this->m_ParticleSystem;
 	delete this->m_Sprite;
 	delete this->m_ParticleSprite;
+
+    // Delete weapon in weapon slots
+    for (int i = 0 ; i < NUM_WEAPON_SLOTS ; ++i)
+    {
+        delete this->m_Weaponslots[i];
+    }
+    delete this->m_Weaponslots;
 
     // Delete physics stuff
     cpSpace *space = this->m_Engine->GetWorld()->GetSpace();
@@ -63,6 +72,14 @@ void Player::Initialize(void)
 	this->m_ParticleSystem = new hgeParticleSystem("data/trail.psi", this->m_ParticleSprite);
 	this->m_ParticleSystem->Fire();
 
+    // Initialize the weapon slots
+    this->m_Weaponslots    = (Weapon**) malloc(sizeof(Weapon*) * NUM_WEAPON_SLOTS);
+    for (int i = 0 ; i < NUM_WEAPON_SLOTS ; ++i)
+    {
+        this->m_Weaponslots[i] = 0;
+    }
+    this->m_Weaponslots[0] = new Neoshooter();
+
     // Initialize physics
     {
         // Define moment
@@ -76,8 +93,57 @@ void Player::Initialize(void)
         cpBodySetPos(this->m_Body, *this->m_Position);
         
         // Add the physics shape
-        this->m_Shape = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 10, cpvzero));
+        this->m_Shape                 = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 10, cpvzero));
+        this->m_Shape->data           = this;
+        this->m_Shape->collision_type = COLLISION_TYPE_GO;
+        cpShapeSetElasticity(this->m_Shape, 1.0f);
         cpShapeSetFriction(this->m_Shape, 0.7);
+
+        // Define the collision handlers for various types of collisions
+        cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_GO, BeginCollisionD, NULL, NULL, NULL, this);
+    }
+}
+
+int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+    // Get the collision shapes
+    CP_ARBITER_GET_SHAPES(arb, a, b);
+
+    Player *t = this;
+    Player *aa = (Player*) a->data;
+    Player *bb = (Player*) b->data;
+
+    /*__asm
+    {
+        int 13
+    }*/
+
+    return true;
+}
+
+int Player::PreCollision(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+    __asm
+    {
+        int 13
+    }
+
+    return true;
+}
+
+void Player::PostCollision(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+    __asm
+    {
+        int 13
+    }
+}
+
+void Player::SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+    __asm
+    {
+        int 13
     }
 }
 
