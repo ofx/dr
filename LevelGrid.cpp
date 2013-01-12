@@ -109,7 +109,6 @@ void LevelGrid::InitializeLevel(void)
         }
     }
 
-    
     // Create a vector from the list, we need direct lookup
     std::vector<Player*> players(p->begin(), p->end());
     
@@ -141,6 +140,9 @@ void LevelGrid::InitializeLevel(void)
     float dx = width / this->m_NumX;
     float dy = height / this->m_NumY;
 
+    // Define the activator length list
+    ACTIVATOR_LENGTH_LIST;
+
     // Run through the players and then run though activators to make sure that
     // we're never generating two activators for one player in sequence
     int y = 0;
@@ -156,6 +158,19 @@ void LevelGrid::InitializeLevel(void)
         
             // Fetch the activator type pointed to by i
             unsigned int activatorType = (*it).at(i);
+
+            // Offset y in some direction
+            srand(x * y);
+            int offsetY = rand() % 5;
+            
+            if (y + offsetY >= this->m_NumY)
+            {
+                y -= offsetY;
+            }
+            else
+            {
+                y += offsetY;
+            }
 
             // Get the selected vertex
             hgeVector *vec = this->m_GridVertices[y][x];
@@ -175,8 +190,8 @@ void LevelGrid::InitializeLevel(void)
 
             // Offset the vertices conform winding
             activator->Vertices[1].x -= dx;
-            activator->Vertices[2].x -= dx; activator->Vertices[2].y -= dy;
-            activator->Vertices[3].y -= dy;
+            activator->Vertices[2].x -= dx; activator->Vertices[2].y -= dy * ACTIVATOR_LENGTH_LIST_NAME[activatorType];
+            activator->Vertices[3].y -= dy * ACTIVATOR_LENGTH_LIST_NAME[activatorType];
 
             // Add the activator
             this->m_Activators[n++] = activator;
@@ -214,6 +229,32 @@ void LevelGrid::InitializeLevelPhysics(void)
         
         cpShape *shape = cpSegmentShapeNew(this->m_Body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
         shape->e = 1.0; shape->u = 1.0;
+        cpSpaceAddStaticShape(space, shape);
+        cpBodyActivateStatic(this->m_Body, shape);
+        this->m_Shapes.push_back(shape);
+    }
+
+    // Create the activator physics shapes
+    for (int i = 0 ; i < this->m_NumActivators ; ++i)
+    {
+        Activator *activator = this->m_Activators[i];
+
+        // Create the cpVects
+        cpVect *verts = (cpVect*) malloc(sizeof(cpVect) * 4);
+        verts[3].x = activator->Vertices[0].x; verts[3].y = activator->Vertices[0].y;
+        verts[2].x = activator->Vertices[1].x; verts[2].y = activator->Vertices[1].y;
+        verts[1].x = activator->Vertices[2].x; verts[1].y = activator->Vertices[2].y;
+        verts[0].x = activator->Vertices[3].x; verts[0].y = activator->Vertices[3].y;
+
+        // Create the offset vector
+        cpVect offset;
+        offset.x = activator->Vertices[0].x + activator->Vertices[2].x / 2; 
+        offset.y = activator->Vertices[0].y + activator->Vertices[2].y / 2;
+
+        // Create and add the poly shape
+        cpShape *shape = cpPolyShapeNew(this->m_Body, 4, verts, offset);
+        shape->sensor = true;
+        shape->collision_type = COLLISION_TYPE_ACTIVATOR;
         cpSpaceAddStaticShape(space, shape);
         cpBodyActivateStatic(this->m_Body, shape);
         this->m_Shapes.push_back(shape);

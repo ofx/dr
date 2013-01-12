@@ -11,6 +11,9 @@
 #define ACTIVATOR_TYPE_FIRE  0
 #define ACTIVATOR_TYPE_BOOST 1
 
+#define ACTIVATOR_LENGTH_LIST_NAME activatorLengthList
+#define ACTIVATOR_LENGTH_LIST      unsigned int activatorLengthList[NUM_ACTIVATORS] = {1, 3}
+
 typedef struct Activator
 {
     unsigned int  ActivatorType;
