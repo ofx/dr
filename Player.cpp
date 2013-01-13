@@ -101,7 +101,19 @@ void Player::Initialize(void)
 
         // Define the collision handlers for various types of collisions
         cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_GO, BeginCollisionD, NULL, NULL, NULL, this);
+        cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_ACTIVATOR, BeginCollisionD, NULL, NULL, NULL, this);
     }
+}
+
+void Player::Shoot(void)
+{
+    // Shoot the active weapon
+    this->m_Weaponslots[this->m_ActiveWeaponslot]->Shoot();
+}
+
+void Player::Boost(void)
+{
+
 }
 
 int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
@@ -109,14 +121,30 @@ int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
     // Get the collision shapes
     CP_ARBITER_GET_SHAPES(arb, a, b);
 
-    Player *t = this;
-    Player *aa = (Player*) a->data;
-    Player *bb = (Player*) b->data;
-
-    /*__asm
+    // Delimit collision types for both shapes
+    if (a->collision_type == COLLISION_TYPE_GO && b->collision_type == COLLISION_TYPE_ACTIVATOR)
     {
-        int 13
-    }*/
+        // Retrieve the activator object
+        Activator *activator = (Activator*) b->data;
+
+        // Check if it is our activator
+        if (activator->Owner == this)
+        {
+            // Retrieve the activator type
+            unsigned int activatorType = activator->ActivatorType;
+
+            // Delegate
+            switch(activatorType)
+            {
+                case ACTIVATOR_TYPE_FIRE:
+                    this->Shoot();
+                    break;
+                case ACTIVATOR_TYPE_BOOST:
+                    this->Boost();
+                    break;
+            }
+        }
+    }
 
     return true;
 }

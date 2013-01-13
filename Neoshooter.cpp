@@ -12,4 +12,8 @@ Neoshooter::~Neoshooter(void)
 
 void Neoshooter::Shoot(void)
 {
+    __asm
+    {
+        int 13
+    }
 }

@@ -246,15 +246,12 @@ void LevelGrid::InitializeLevelPhysics(void)
         verts[1].x = activator->Vertices[2].x; verts[1].y = activator->Vertices[2].y;
         verts[0].x = activator->Vertices[3].x; verts[0].y = activator->Vertices[3].y;
 
-        // Create the offset vector
-        cpVect offset;
-        offset.x = activator->Vertices[0].x + activator->Vertices[2].x / 2; 
-        offset.y = activator->Vertices[0].y + activator->Vertices[2].y / 2;
-
         // Create and add the poly shape
-        cpShape *shape = cpPolyShapeNew(this->m_Body, 4, verts, offset);
-        shape->sensor = true;
+        cpShape *shape = cpPolyShapeNew(this->m_Body, 4, verts, cpvzero);
+        shape->e = 1.0; shape->u = 1.0;
+        shape->sensor         = true;
         shape->collision_type = COLLISION_TYPE_ACTIVATOR;
+        shape->data           = activator;
         cpSpaceAddStaticShape(space, shape);
         cpBodyActivateStatic(this->m_Body, shape);
         this->m_Shapes.push_back(shape);

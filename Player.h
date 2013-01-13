@@ -39,6 +39,9 @@ private:
 
     const float SPEED;
     const float FRICTION;
+
+    void Shoot(void);
+    void Boost(void);
 public:
     Player(cpVect position, DWORD color, int index, std::string name);
     ~Player(void);
