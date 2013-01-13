@@ -59,6 +59,7 @@ public:
     void Update(float dt);
 
     void RemoveGameObject(GameObject *object);
+    void AddGameObject(GameObject *object);
 
     friend class LevelGridManager;
     friend class PlayerManager;

@@ -40,6 +40,11 @@ void World::RemoveGameObject(GameObject *object)
     this->m_DeletionList.push_back(object);
 }
 
+void World::AddGameObject(GameObject *object)
+{
+    this->m_Objects.push_back(object);
+}
+
 void World::InitializePhysics(void)
 {
     // The space should have gravity
@@ -108,8 +113,11 @@ void World::Update(float dt)
     for (it = this->m_DeletionList.begin() ; it != this->m_DeletionList.end() ; ++it)
     {
         GameObject *object = *it;
-        this->m_Objects.remove(object);
-        delete object;
+        if (object)
+        {
+            this->m_Objects.remove(object);
+            delete object;
+        }
     }
     this->m_DeletionList.clear();
 }

@@ -239,6 +239,9 @@ void Engine::Shutdown(void)
 
 void Engine::Boot(void)
 {
+    // Random seed
+    srand(time(NULL));
+
     // Set all system states
 	this->m_Hge->System_SetState(HGE_LOGFILE,        this->m_LogFile.c_str());
 	this->m_Hge->System_SetState(HGE_TITLE,          this->m_Title.c_str());

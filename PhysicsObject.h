@@ -8,6 +8,7 @@
 #define COLLISION_TYPE_LEVEL     0
 #define COLLISION_TYPE_GO        1
 #define COLLISION_TYPE_ACTIVATOR 2
+#define COLLISION_TYPE_BULLET    3
 
 class PhysicsObject : public GameObject
 {

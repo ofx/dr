@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="cJSON.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DroidRacers.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Neoshooter.cpp" />
+    <ClCompile Include="NeoshooterBullet.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="LevelGrid.cpp" />
     <ClCompile Include="LevelGridManager.cpp" />
@@ -27,11 +29,13 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="cJSON.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DroidRacers.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Neoshooter.h" />
+    <ClInclude Include="NeoshooterBullet.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="LevelGrid.h" />
     <ClInclude Include="LevelGridManager.h" />

@@ -55,6 +55,10 @@ public:
     {
         return this->m_Color;
     }
+    cpVect GetDirectionVector(void)
+    {
+        return this->m_Body->v;
+    }
 
     int BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data);
     int PreCollision(cpArbiter *arb, struct cpSpace *space, void *data);

@@ -218,6 +218,7 @@ void LevelGrid::InitializeLevelPhysics(void)
 
         cpShape *shape = cpSegmentShapeNew(this->m_Body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
         shape->e = 1.0; shape->u = 1.0;
+        shape->collision_type = COLLISION_TYPE_LEVEL;
         cpSpaceAddStaticShape(space, shape);
         cpBodyActivateStatic(this->m_Body, shape);
         this->m_Shapes.push_back(shape);
@@ -229,6 +230,7 @@ void LevelGrid::InitializeLevelPhysics(void)
         
         cpShape *shape = cpSegmentShapeNew(this->m_Body, cpv(vec->x, vec->y), cpv(nvec->x, nvec->y), 0.0f);
         shape->e = 1.0; shape->u = 1.0;
+        shape->collision_type = COLLISION_TYPE_LEVEL;
         cpSpaceAddStaticShape(space, shape);
         cpBodyActivateStatic(this->m_Body, shape);
         this->m_Shapes.push_back(shape);
@@ -312,23 +314,6 @@ void LevelGrid::Initialize(void)
 
         this->m_BackgroundQuad = mQuad;
     }
-
-#ifdef false
-    char b[100];
-    sprintf(
-        b, 
-        "%4.2f,%4.2f\n%4.2f,%4.2f\n%4.2f,%4.2f\n%4.2f,%4.2f\n", 
-        this->m_Boundaries.x1,
-        this->m_Boundaries.y1,
-        this->m_Boundaries.x2,
-        this->m_Boundaries.y1,
-        this->m_Boundaries.x2,
-        this->m_Boundaries.y2,
-        this->m_Boundaries.x1,
-        this->m_Boundaries.y2
-    );
-    OutputDebugStringA(b);
-#endif
 
     // Allocate
     // Achtung: Adding one extra to fill the complete screen
@@ -458,9 +443,15 @@ void LevelGrid::Render(float dt)
     {
         Activator *activator = this->m_Activators[i];
 
+        // Defint the inner color
         DWORD color = activator->Owner->GetColor();
         color &= 0xB4FFFFFF;
+
+        // Define the outline color
+        DWORD colorLine = activator->Owner->GetColor();
+        color &= 0x64FFFFFF;
     
+        // Render the quad
         hgeQuad *activatorQuad = new hgeQuad();
         activatorQuad->tex    = 0;
         activatorQuad->blend  = BLEND_DEFAULT_Z;
@@ -471,7 +462,91 @@ void LevelGrid::Render(float dt)
 
         this->m_Engine->GetHge()->Gfx_RenderQuad(activatorQuad);
         delete activatorQuad;
+
+        // Render the outline
+        this->m_Engine->DrawLine(
+            activator->Vertices[0],
+            activator->Vertices[1],
+            colorLine,
+            this->m_LineWidth
+        );
+        this->m_Engine->DrawLine(
+            activator->Vertices[1],
+            activator->Vertices[2],
+            colorLine,
+            this->m_LineWidth
+        );
+        this->m_Engine->DrawLine(
+            activator->Vertices[2],
+            activator->Vertices[3],
+            colorLine,
+            this->m_LineWidth
+        );
+        this->m_Engine->DrawLine(
+            activator->Vertices[3],
+            activator->Vertices[0],
+            colorLine,
+            this->m_LineWidth
+        );
+
+        // Render individual markers
+        switch (activator->ActivatorType)
+        {
+            case ACTIVATOR_TYPE_BOOST:
+                this->RenderBoostActivatorMarker(activator);
+                break;
+            case ACTIVATOR_TYPE_FIRE:
+                this->RenderFireActivatorMarker(activator);
+                break;
+        }
     }
+}
+
+void LevelGrid::RenderFireActivatorMarker(Activator *activator)
+{
+    // Define the color
+    DWORD color = activator->Owner->GetColor();
+    color &= 0x64FFFFFF;
+
+    // Render a cross in the middle of the activator
+    this->m_Engine->DrawLine(
+        activator->Vertices[0],
+        activator->Vertices[2],
+        color,
+        3.0f
+    );
+    this->m_Engine->DrawLine(
+        activator->Vertices[1],
+        activator->Vertices[3],
+        color,
+        3.0f
+    );
+}
+
+void LevelGrid::RenderBoostActivatorMarker(Activator *activator)
+{
+    // Define the color
+    DWORD color = activator->Owner->GetColor();
+    color &= 0x64FFFFFF;
+
+    // Define midpoint
+    hgeVector midpoint;
+    midpoint.y = activator->Vertices[0].y;
+    midpoint.x = (activator->Vertices[0].x + activator->Vertices[1].x) / 2;
+
+    // Render a cross in the middle of the activator
+    this->m_Engine->DrawLine(
+        activator->Vertices[3],
+        midpoint,
+        color,
+        3.0f
+    );
+    this->m_Engine->DrawLine(
+        activator->Vertices[2],
+        midpoint,
+        color,
+        3.0f
+    );
 }
 
 void LevelGrid::Update(float dt)

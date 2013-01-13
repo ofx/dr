@@ -8,8 +8,9 @@
 class Neoshooter : public Weapon
 {
 public:
-    Neoshooter(void);
+    Neoshooter(Player *owner, World *world);
     ~Neoshooter(void);
 
     void Shoot(void);
+    static void ShootP(cpSpace *space, void *obj, void *data);
 };

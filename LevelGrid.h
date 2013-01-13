@@ -65,6 +65,9 @@ public:
     LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth, unsigned int splitfactor, bool hasLevel);
     ~LevelGrid(void);
 
+    void RenderFireActivatorMarker(Activator *activator);
+    void RenderBoostActivatorMarker(Activator *activator);
+
     void Initialize(void);
     void InitializeLevel(void);
     void InitializeLevelPhysics(void);

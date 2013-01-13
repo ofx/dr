@@ -7,8 +7,10 @@
 
 #include "Weapon.h"
 
-Weapon::Weapon(std::string name, std::string shortName) : WeaponName(name), WeaponShortName(shortName)
+Weapon::Weapon(Player *owner, World *world, std::string name, std::string shortName) : WeaponName(name), WeaponShortName(shortName)
 {
+    this->m_Owner = owner;
+    this->m_World = world;
 }
 
 Weapon::~Weapon(void)

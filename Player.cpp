@@ -78,7 +78,7 @@ void Player::Initialize(void)
     {
         this->m_Weaponslots[i] = 0;
     }
-    this->m_Weaponslots[0] = new Neoshooter();
+    this->m_Weaponslots[0] = new Neoshooter(this, this->m_Engine->GetWorld());
 
     // Initialize physics
     {
@@ -158,20 +158,11 @@ int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
 
 int Player::PreCollision(cpArbiter *arb, struct cpSpace *space, void *data)
 {
-    __asm
-    {
-        int 13
-    }
-
     return true;
 }
 
 void Player::PostCollision(cpArbiter *arb, struct cpSpace *space, void *data)
 {
-    __asm
-    {
-        int 13
-    }
 }
 
 void Player::SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data)

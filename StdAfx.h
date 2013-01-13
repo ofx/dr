@@ -42,6 +42,8 @@
 // DroidRacers
 #include "GameObject.h"
 #include "PhysicsObject.h"
+#include "Bullet.h"
+#include "NeoshooterBullet.h"
 #include "Weapon.h"
 #include "Neoshooter.h"
 #include "Player.h"
