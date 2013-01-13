@@ -91,7 +91,7 @@ void Player::Initialize(void)
         // Add the physics body
         this->m_Body = cpSpaceAddBody(space, cpBodyNew(1, moment));
         cpBodySetPos(this->m_Body, *this->m_Position);
-        
+
         // Add the physics shape
         this->m_Shape                 = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 10, cpvzero));
         this->m_Shape->data           = this;
@@ -101,7 +101,7 @@ void Player::Initialize(void)
 
         // Define the collision handlers for various types of collisions
         cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_GO, BeginCollisionD, NULL, NULL, NULL, this);
-        cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_ACTIVATOR, BeginCollisionD, NULL, NULL, NULL, this);
+        cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_ACTIVATOR, BeginCollisionD, NULL, NULL, SeparateCollisionD, this);
     }
 }
 
@@ -113,7 +113,14 @@ void Player::Shoot(void)
 
 void Player::Boost(void)
 {
+    // Increase speed
+    this->m_Speed = 1.3f;
+}
 
+void Player::EndBoost(void)
+{
+    // Default speed
+    this->m_Speed = 0.9f;
 }
 
 int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
@@ -169,9 +176,29 @@ void Player::PostCollision(cpArbiter *arb, struct cpSpace *space, void *data)
 
 void Player::SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data)
 {
-    __asm
+    // Get the collision shapes
+    CP_ARBITER_GET_SHAPES(arb, a, b);
+
+    // Delimit collision types for both shapes
+    if (a->collision_type == COLLISION_TYPE_GO && b->collision_type == COLLISION_TYPE_ACTIVATOR)
     {
-        int 13
+        // Retrieve the activator object
+        Activator *activator = (Activator*) b->data;
+
+        // Check if it is our activator
+        if (activator->Owner == this)
+        {
+            // Retrieve the activator type
+            unsigned int activatorType = activator->ActivatorType;
+
+            // Delegate
+            switch(activatorType)
+            {
+                case ACTIVATOR_TYPE_BOOST:
+                    this->EndBoost();
+                    break;
+            }
+        }
     }
 }
 

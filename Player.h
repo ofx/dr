@@ -42,6 +42,7 @@ private:
 
     void Shoot(void);
     void Boost(void);
+    void EndBoost(void);
 public:
     Player(cpVect position, DWORD color, int index, std::string name);
     ~Player(void);
