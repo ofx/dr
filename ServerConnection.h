@@ -8,6 +8,7 @@
 #define SERVER_CONNECTION_TIMEOUT 20
 
 #include <string>
+#include <map>
 
 enum PacketType
 {
@@ -15,6 +16,12 @@ enum PacketType
     Response,
     Error
 };
+
+typedef struct
+{
+    Player      *Player;
+    std::string  ClientId;
+} Client;
 
 class Packet
 {
@@ -75,6 +82,8 @@ private:
 
     time_t       m_LastTransmission;
 
+    std::map<std::string, Client*> m_Clients;
+
     void EncodeQrcodeToPng(QRcode *qrcode);
 
     bool InitializeSockets(void);
@@ -88,6 +97,9 @@ private:
     bool Initialize(void);
 
     void NewGame(Packet &packet);
+    void JoinGame(Packet &packet);
+    void DispatchClientRequest(Packet &packet);
+    void DispatchClientUpdate(Packet &packet);
 public:
     ServerConnection(Engine *engine);
     ~ServerConnection(void);

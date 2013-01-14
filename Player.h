@@ -35,6 +35,8 @@ private:
     float m_DeltaX;
     float m_DeltaY;
 
+    float m_SteeringValue;
+
     unsigned int m_PlayerIndex;
 
     const float SPEED;
@@ -66,9 +68,12 @@ public:
     void SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data);
 
     void SetSpeed(float speed);
+    void SetSteeringValue(float steeringValue);
 
     // Provide an interface to sort the ranking of players
     bool operator>(const Player &player) const;
+
+    void CycleWeapons(void);
 
     void Initialize(void);
     void Render(float dt);

@@ -13,6 +13,8 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
     this->m_PlayerIndex = index;
     this->m_Name = name;
 
+    this->m_SteeringValue = 0.0f;
+
     this->m_ActiveWeaponslot = 0;
 
     this->m_Position = new cpVect(position);
@@ -73,7 +75,7 @@ void Player::Initialize(void)
 	this->m_ParticleSystem->Fire();
 
     // Initialize the weapon slots
-    this->m_Weaponslots    = (Weapon**) malloc(sizeof(Weapon*) * NUM_WEAPON_SLOTS);
+    this->m_Weaponslots = (Weapon**) malloc(sizeof(Weapon*) * NUM_WEAPON_SLOTS);
     for (int i = 0 ; i < NUM_WEAPON_SLOTS ; ++i)
     {
         this->m_Weaponslots[i] = 0;
@@ -202,6 +204,11 @@ void Player::SetSpeed(float speed)
     this->m_Speed = speed;
 }
 
+void Player::SetSteeringValue(float steeringValue)
+{
+    this->m_SteeringValue = steeringValue;
+}
+
 void Player::Render(float dt)
 {
 	this->m_ParticleSystem->Render();
@@ -211,6 +218,21 @@ void Player::Render(float dt)
     // TODO: Follow player group
     this->m_Engine->GetWorld()->WorldCamera->Position.x = (this->m_Engine->GetWidth() * 0.5f) - this->m_Position->x;
     this->m_Engine->GetWorld()->WorldCamera->Position.y = (this->m_Engine->GetHeight() * 0.5f) - this->m_Position->y;
+}
+
+void Player::CycleWeapons(void)
+{
+    if (this->m_ActiveWeaponslot + 1 >= NUM_WEAPON_SLOTS)
+    {
+        this->m_ActiveWeaponslot = 0;
+    }
+    else
+    {
+        if (this->m_Weaponslots[this->m_ActiveWeaponslot + 1] != 0)
+        {
+            ++this->m_ActiveWeaponslot;
+        }
+    }
 }
 
 inline bool Player::operator>(const Player &other) const 
@@ -225,6 +247,9 @@ void Player::Update(float dt)
 
     // Update the position
     this->m_Position = new cpVect(cpBodyGetPos(this->m_Body));
+
+    // Set the steering value
+    this->m_Body->v.x = this->m_SteeringValue;
 
 #ifdef _DEBUG
         int KEY_MAP[5][2] = {

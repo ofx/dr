@@ -23,21 +23,27 @@ PlayerManager::~PlayerManager(void)
     delete this->m_Players;
 }
 
+Player *PlayerManager::NewPlayer(void)
+{
+    static int i = 0;
+
+    // Place the new player in the center of the camera
+    cpVect pos = this->m_World->WorldCamera->Position;
+
+    // Retrieve the color list
+    PLAYER_COLOR_SET;
+
+    // Create the player
+    Player *player = new Player(pos, PLAYER_COLOR_SET_NAME[i++], 0, "Player");
+    this->m_Players->push_back(player);
+    this->m_World->m_Objects.push_back(player);
+
+    return player;
+}
+
 void PlayerManager::Initialize(void)
 {
-    cpVect pos;
-    pos.x = 400.0f;
-    pos.y = 600.0f;
 
-    Player *player = new Player(pos, 0xFFFFA0FF, 0, "Player2");
-    this->m_Players->push_back(player);
-    this->m_World->m_Objects.push_back(player);
-
-    pos.x += 20.0f;
-
-    player = new Player(pos, 0xFF6CCCBE, 1, "Player1");
-    this->m_Players->push_back(player);
-    this->m_World->m_Objects.push_back(player);
 }
 
 void PlayerManager::Render(float dt)

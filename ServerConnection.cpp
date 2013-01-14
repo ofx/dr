@@ -356,6 +356,104 @@ void ServerConnection::NewGame( Packet &packet )
     this->m_IsConnected = true;
 }
 
+void ServerConnection::JoinGame(Packet &packet)
+{
+    // Fetch client id and message id
+	std::string cid; packet.GetStringValue("cid", cid);
+	int mid;         packet.GetIntValue("mid", mid);
+
+	// Create reply
+	Packet accepted;
+	accepted.SetPacketType( Response );
+	accepted.AddStringItem( "header", "clientAccepted" );
+	accepted.AddStringItem( "cid", cid );
+	accepted.AddStringItem( "gid", this->m_GameUuid );
+	accepted.AddNumberItem( "mid", mid );
+
+    // Write
+    char *data  = accepted.GetString();
+    DWORD datal = strlen(accepted.GetString());
+    this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
+    delete data;
+
+    // Create reply
+	accepted.SetPacketType( Response );
+	accepted.AddStringItem( "header", "startRacing" );
+	accepted.AddStringItem( "cid", cid );
+	accepted.AddStringItem( "gid", this->m_GameUuid );
+	accepted.AddNumberItem( "mid", mid );
+
+    // Write
+    char *data  = accepted.GetString();
+    DWORD datal = strlen(accepted.GetString());
+    this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
+    delete data;
+
+	// Add a new client to client map
+    Client *client = new Client();
+    client->Player = this->m_Engine->GetWorld()->GetPlayerManager()->NewPlayer();
+    client->ClientId = cid;
+	this->m_Clients[cid] = new Client();
+}
+
+void ServerConnection::DispatchClientRequest(Packet &packet)
+{
+    std::string cid; packet.GetStringValue("cid", cid);
+	int mid;         packet.GetIntValue("mid", mid);
+
+	if(packet.GetStringValue( "cid", cid))
+	{ 
+        if(this->m_Clients.find(cid) != this->m_Clients.end())
+        {
+            std::string header;
+            packet.GetStringValue( "header", header );
+
+            if(header == "-attack1" || header == "+attack1")
+            {
+                // Throttle is mapped to cycle weapons
+                this->m_Clients[cid]->Player->CycleWeapons();
+                
+                // Send response packet
+                Packet accepted;
+	            accepted.SetPacketType(Response);
+	            accepted.AddStringItem("header", "throttle");
+	            accepted.AddStringItem("cid", cid);
+	            accepted.AddStringItem("gid", this->m_GameUuid);
+	            accepted.AddNumberItem("mid", mid);
+
+                // Write
+                char *data  = accepted.GetString();
+                DWORD datal = strlen(accepted.GetString());
+                this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
+                delete data;
+            }
+        }
+	}
+}
+
+void ServerConnection::DispatchClientUpdate(Packet &packet)
+{
+	std::string cid;
+
+	if( packet.GetStringValue( "cid", cid ) )
+	{ 
+        if( this->m_Clients.find( cid ) != this->m_Clients.end() )
+        {
+            std::string header;
+            packet.GetStringValue("header", header);
+
+            if(header == "accelerometer")
+            {
+                float x, y, z;
+	            packet.GetFloatValue("x", x); packet.GetFloatValue("y", y); packet.GetFloatValue("z", z);
+                
+                // Dispatch
+		        this->m_Clients[cid]->Player->SetSteeringValue(x);
+            }
+        }
+	}
+}
+
 void ServerConnection::Dispatch(char *data, unsigned int size)
 {
     // Create a packet from the data
@@ -393,17 +491,17 @@ void ServerConnection::Dispatch(char *data, unsigned int size)
         // Check packet
 		if( type == "inform" )
 		{
-			//this->DispatchClientUpdate(packet);
+			this->DispatchClientUpdate(in);
 		}
         else if( type == "request" )
         {
             if(header == "throttle" || header == "-attack1" || header == "+attack1")
             {
-                //this->DispatchClientRequest(packet);
+                this->DispatchClientRequest(in);
             }
             else if(header == "joinGame")
 		    {
-			    //this->JoinGame(packet);
+			    this->JoinGame(in);
 		    }
         }
         else if(header == "newGame")

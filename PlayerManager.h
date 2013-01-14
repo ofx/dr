@@ -3,6 +3,9 @@
  * by Marlon Etheredge
  */
 
+#define PLAYER_COLOR_SET_NAME colorList
+#define PLAYER_COLOR_SET      DWORD colorList[7] = {0xFFFFA0FF, 0xFF6CCCBE, 0xFF7F2A7F, 0xFF6CCCBD, 0xFFFFF0B9, 0xFF70B24C, 0xFF992323};
+
 #pragma once
 
 #include <algorithm>
@@ -23,6 +26,9 @@ public:
     {
         return this->m_Players;
     }
+
+    Player *NewPlayer(void);
+    Player *RemovePlayer(void);
 
     void Initialize(void);
     void Render(float dt);
