@@ -377,15 +377,15 @@ void ServerConnection::JoinGame(Packet &packet)
     delete data;
 
     // Create reply
-	accepted.SetPacketType( Response );
-	accepted.AddStringItem( "header", "startRacing" );
-	accepted.AddStringItem( "cid", cid );
-	accepted.AddStringItem( "gid", this->m_GameUuid );
-	accepted.AddNumberItem( "mid", mid );
+	accepted.SetPacketType(Response);
+	accepted.AddStringItem("header", "startRacing");
+	accepted.AddStringItem("cid", cid);
+	accepted.AddStringItem("gid", this->m_GameUuid);
+	accepted.AddNumberItem("mid", mid);
 
     // Write
-    char *data  = accepted.GetString();
-    DWORD datal = strlen(accepted.GetString());
+    data = accepted.GetString();
+    datal = strlen(accepted.GetString());
     this->SendData(data, datal, (sockaddr*) this->m_ServerSockAddress);
     delete data;
 

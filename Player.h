@@ -42,6 +42,7 @@ private:
     const float SPEED;
     const float FRICTION;
 
+    void TransferWeapon(Weapon* weapon);
     void Shoot(void);
     void Boost(void);
     void EndBoost(void);

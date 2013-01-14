@@ -66,6 +66,10 @@ public:
     {
         return this->m_Height;
     }
+    hgeFont *GetDefaultFont(void)
+    {
+        return this->m_DefaultFont;
+    }
 
     void SetDrawStats(bool stats);
     void SetLogFile(std::string logFile);

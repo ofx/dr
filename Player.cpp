@@ -106,6 +106,24 @@ void Player::Initialize(void)
     }
 }
 
+void Player::TransferWeapon(Weapon *weapon)
+{
+    // Seek for an empty slot
+    for (int i = 0 ; i < NUM_WEAPON_SLOTS ; ++i)
+    {
+        if (this->m_Weaponslots[i] == 0)
+        {
+            this->m_ActiveWeaponslot = i;
+        }
+    }
+
+    // Delete the current weapon
+    delete this->m_Weaponslots[this->m_ActiveWeaponslot];
+
+    // Transfer the weapon from the activator to the player
+    this->m_Weaponslots[this->m_ActiveWeaponslot] = weapon;
+}
+
 void Player::Shoot(void)
 {
     // Shoot the active weapon
@@ -149,6 +167,10 @@ int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
                     break;
                 case ACTIVATOR_TYPE_BOOST:
                     activator->Owner->Boost();
+                    break;
+                case ACTIVATOR_TYPE_WEAPON:
+                    activator->Owner->TransferWeapon((Weapon*) activator->Data);
+                    activator->Data = 0;
                     break;
             }
         }
@@ -249,15 +271,12 @@ void Player::Update(float dt)
     this->m_Position = new cpVect(cpBodyGetPos(this->m_Body));
 
     // Set the steering value
-    this->m_Body->v.x = this->m_SteeringValue;
+    //this->m_Body->v.x = this->m_SteeringValue;
 
 #ifdef _DEBUG
-        int KEY_MAP[5][2] = {
-            {HGEK_LEFT, HGEK_RIGHT},
-            {HGEK_A,    HGEK_S},
-            {HGEK_R,    HGEK_T},
-            {HGEK_V,    HGEK_B},
-            {HGEK_U,    HGEK_I}
+        int KEY_MAP[5][3] = {
+            {HGEK_LEFT, HGEK_RIGHT, HGEK_O},
+            {HGEK_A,    HGEK_S,     HGEK_D}
         };
 
         // Process keys
@@ -272,6 +291,10 @@ void Player::Update(float dt)
         if (this->m_Hge->Input_GetKeyState(KEY_MAP[this->m_PlayerIndex][1]))
         {
             this->m_Body->v.x += SPEED * dt;
+        }
+        if (this->m_Hge->Input_GetKeyState(KEY_MAP[this->m_PlayerIndex][2]))
+        {
+            this->CycleWeapons();
         }
 #endif
 

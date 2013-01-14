@@ -43,7 +43,13 @@ Player *PlayerManager::NewPlayer(void)
 
 void PlayerManager::Initialize(void)
 {
+    cpVect pos;
+    pos.x = 400.0f;
+    pos.y = 600.0f;
 
+    Player *player = new Player(pos, 0xFFFFA0FF, 0, "Player1");
+    this->m_Players->push_back(player);
+    this->m_World->m_Objects.push_back(player);
 }
 
 void PlayerManager::Render(float dt)

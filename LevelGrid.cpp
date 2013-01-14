@@ -192,6 +192,20 @@ void LevelGrid::InitializeLevel(void)
 
                 // Set the owner
                 activator->Owner = players.at(k++);
+
+                // In case the activator type is one of type weapon (pickup), add a random weapon to the activator
+                if (activatorType == ACTIVATOR_TYPE_WEAPON)
+                {
+                    // Get a random index
+                    int index = rand() % NUM_WEAPONS;
+
+                    switch (index)
+                    {
+                        case WEAPON_INDEX_NEOSHOOTER:
+                            activator->Data = new Neoshooter(activator->Owner, this->m_Engine->GetWorld());
+                            break;
+                    }
+                }
             
                 // Define the vertices
                 activator->Vertices[0] = *vec; activator->Vertices[1] = *vec;
@@ -257,10 +271,6 @@ void LevelGrid::InitializeLevelPhysics(void)
         verts[2].x = activator->Vertices[1].x; verts[2].y = activator->Vertices[1].y;
         verts[1].x = activator->Vertices[2].x; verts[1].y = activator->Vertices[2].y;
         verts[0].x = activator->Vertices[3].x; verts[0].y = activator->Vertices[3].y;
-
-        char b[100];
-        sprintf(b, "Name: %s\n", activator->Owner->GetName().c_str());
-        OutputDebugStringA(b);
 
         // Create and add the poly shape
         cpShape *shape = cpPolyShapeNew(this->m_Body, 4, verts, cpvzero);
@@ -512,7 +522,24 @@ void LevelGrid::Render(float dt)
             case ACTIVATOR_TYPE_FIRE:
                 this->RenderFireActivatorMarker(activator);
                 break;
+            case ACTIVATOR_TYPE_WEAPON:
+                this->RenderWeaponActivatorMarker(activator);
+                break;
         }
+    }
+}
+
+void LevelGrid::RenderWeaponActivatorMarker(Activator *activator)
+{
+    if (activator->Data != 0)
+    {
+        this->m_Engine->GetDefaultFont()->printf(
+            (activator->Vertices[0].x + activator->Vertices[1].x) / 2,
+            activator->Vertices[0].y,
+            HGETEXT_CENTER,
+            "NS",
+            ((Weapon*)activator->Data)->WeaponShortName
+        );
     }
 }
 

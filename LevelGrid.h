@@ -7,18 +7,20 @@
 
 #include <map>
 
-#define NUM_ACTIVATORS       2
-#define ACTIVATOR_TYPE_FIRE  0
-#define ACTIVATOR_TYPE_BOOST 1
+#define NUM_ACTIVATORS        3
+#define ACTIVATOR_TYPE_FIRE   0
+#define ACTIVATOR_TYPE_BOOST  1
+#define ACTIVATOR_TYPE_WEAPON 2
 
 #define ACTIVATOR_LENGTH_LIST_NAME activatorLengthList
-#define ACTIVATOR_LENGTH_LIST      unsigned int activatorLengthList[NUM_ACTIVATORS] = {1, 4}
+#define ACTIVATOR_LENGTH_LIST      unsigned int activatorLengthList[NUM_ACTIVATORS] = {1, 4, 1}
 
 typedef struct Activator
-{
+{   
     unsigned int  ActivatorType;
     hgeVector     Vertices[4];
     Player       *Owner;
+    void         *Data;
 } Activator;
 
 class LevelGrid : public GameObject
@@ -65,6 +67,7 @@ public:
     LevelGrid(hgeVector offset, hgeRect *cameraBoundaries, int trackWidth, unsigned int splitfactor, bool hasLevel);
     ~LevelGrid(void);
 
+    void RenderWeaponActivatorMarker(Activator *activator);
     void RenderFireActivatorMarker(Activator *activator);
     void RenderBoostActivatorMarker(Activator *activator);
 
