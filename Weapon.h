@@ -7,9 +7,10 @@
 
 #include <string>
 
-#define NUM_WEAPONS             1
+#define NUM_WEAPONS             2
 
 #define WEAPON_INDEX_NEOSHOOTER 0
+#define WEAPON_INDEX_TRISCEPTRE 1
 
 class World;
 

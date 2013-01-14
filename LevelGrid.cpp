@@ -204,6 +204,9 @@ void LevelGrid::InitializeLevel(void)
                         case WEAPON_INDEX_NEOSHOOTER:
                             activator->Data = new Neoshooter(activator->Owner, this->m_Engine->GetWorld());
                             break;
+                        case WEAPON_INDEX_TRISCEPTRE:
+                            activator->Data = new Trisceptre(activator->Owner, this->m_Engine->GetWorld());
+                            break;
                     }
                 }
             
@@ -537,8 +540,8 @@ void LevelGrid::RenderWeaponActivatorMarker(Activator *activator)
             (activator->Vertices[0].x + activator->Vertices[1].x) / 2,
             activator->Vertices[0].y,
             HGETEXT_CENTER,
-            "NS",
-            ((Weapon*)activator->Data)->WeaponShortName
+            "%s",
+            ((Weapon*)activator->Data)->WeaponShortName.c_str()
         );
     }
 }

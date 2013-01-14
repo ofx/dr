@@ -25,6 +25,8 @@
     <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="ServerConnection.cpp" />
     <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="Trisceptre.cpp" />
+    <ClCompile Include="TrisceptreBullet.cpp" />
     <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -43,6 +45,8 @@
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="ServerConnection.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Trisceptre.h" />
+    <ClInclude Include="TrisceptreBullet.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
