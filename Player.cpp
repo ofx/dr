@@ -19,6 +19,8 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
 
     this->m_Position = new cpVect(position);
 
+    this->m_Health = 1.0f;
+
     this->m_DeltaX = 0.0f;
     this->m_DeltaY = 0.0f;
 
@@ -103,6 +105,7 @@ void Player::Initialize(void)
 
         // Define the collision handlers for various types of collisions
         cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_ACTIVATOR, BeginCollisionD, NULL, NULL, SeparateCollisionD, this);
+        cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_BULLET, BeginCollisionD, NULL, NULL, NULL, this);
     }
 }
 
@@ -180,6 +183,18 @@ int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
             return false;
         }
     }
+    else if (a->collision_type == COLLISION_TYPE_GO && b->collision_type == COLLISION_TYPE_BULLET)
+    {
+        // Retrieve the associated objects
+        Player *player = (Player*) a->data;
+        Bullet *bullet = (Bullet*) b->data;
+
+        // Check if it's not own bullet
+        if (player != bullet->GetOwner())
+        {
+            bullet->HandleDamage(player);
+        }
+    }
 
     return true;
 }
@@ -231,10 +246,29 @@ void Player::SetSteeringValue(float steeringValue)
     this->m_SteeringValue = steeringValue;
 }
 
+void Player::DecreaseHealth(float value)
+{
+    this->m_Health -= value;
+}
+
+void Player::IncreaseHealth(float value)
+{
+    this->m_Health += value;
+}
+
 void Player::Render(float dt)
 {
 	this->m_ParticleSystem->Render();
 	this->m_Sprite->Render(this->m_Position->x, this->m_Position->y);
+
+    // Render the player's health
+    this->m_Engine->GetDefaultFont()->printf(
+        this->m_Position->x + 5.0f,
+        this->m_Position->y + 5.0f,
+        HGETEXT_LEFT,
+        "%1.1f",
+        this->m_Health
+    );
 
     // Set the world camera to follow the player
     // TODO: Follow player group

@@ -15,6 +15,8 @@ public:
     NeoshooterBullet(Player *owner);
     ~NeoshooterBullet(void);
 
+    void HandleDamage(Player *player);
+
     void Initialize(void);
     void Render(float dt);
     void Update(float dt);

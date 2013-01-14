@@ -7,6 +7,7 @@ Bullet::Bullet(Player *owner, cpVect directionVector)
     this->m_Owner           = owner;
     this->m_Position        = owner->GetPosition();
     this->m_DirectionVector = directionVector;
+    this->m_LevelCollisionCount = 0;
 }
 
 Bullet::~Bullet(void)

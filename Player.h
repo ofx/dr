@@ -30,6 +30,8 @@ private:
     Weapon **m_Weaponslots;
     int m_ActiveWeaponslot;
 
+    float m_Health;
+
     float m_Speed;
 
     float m_DeltaX;
@@ -62,6 +64,9 @@ public:
     {
         return this->m_Body->v;
     }
+
+    void DecreaseHealth(float value);
+    void IncreaseHealth(float value);
 
     int BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data);
     int PreCollision(cpArbiter *arb, struct cpSpace *space, void *data);

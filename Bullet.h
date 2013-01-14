@@ -11,6 +11,8 @@ protected:
 
     cpVect  m_DirectionVector;
 
+    unsigned int m_LevelCollisionCount;
+
     bool    m_Active;
 
     float   m_Speed;
@@ -19,6 +21,8 @@ public:
     virtual ~Bullet(void);
 
     void InitializeBullet(void);
+
+    virtual void HandleDamage(Player *player) = 0;
 
     int BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data);
     int PreCollision(cpArbiter *arb, struct cpSpace *space, void *data);

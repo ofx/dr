@@ -26,6 +26,11 @@ NeoshooterBullet::~NeoshooterBullet(void)
     cpBodyFree(this->m_Body);
 }
 
+void NeoshooterBullet::HandleDamage(Player *player)
+{
+    player->DecreaseHealth(.1f);
+}
+
 void NeoshooterBullet::Initialize(void)
 {
     // Load the texture
