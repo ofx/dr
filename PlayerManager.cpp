@@ -33,11 +33,11 @@ void PlayerManager::Initialize(void)
     this->m_Players->push_back(player);
     this->m_World->m_Objects.push_back(player);
 
-    /*pos.x += 20.0f;
+    pos.x += 20.0f;
 
     player = new Player(pos, 0xFF6CCCBE, 1, "Player1");
     this->m_Players->push_back(player);
-    this->m_World->m_Objects.push_back(player);*/
+    this->m_World->m_Objects.push_back(player);
 }
 
 void PlayerManager::Render(float dt)

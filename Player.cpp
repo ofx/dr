@@ -100,7 +100,6 @@ void Player::Initialize(void)
         cpShapeSetFriction(this->m_Shape, 0.7);
 
         // Define the collision handlers for various types of collisions
-        cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_GO, BeginCollisionD, NULL, NULL, NULL, this);
         cpSpaceAddCollisionHandler(space, COLLISION_TYPE_GO, COLLISION_TYPE_ACTIVATOR, BeginCollisionD, NULL, NULL, SeparateCollisionD, this);
     }
 }
@@ -134,22 +133,27 @@ int Player::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)
         // Retrieve the activator object
         Activator *activator = (Activator*) b->data;
 
-        // Check if it is our activator
-        if (activator->Owner == this)
+        // Retrieve the player object
+        Player *player = (Player*) a->data;
+    
+        // Check if the right player is triggering
+        if (player == activator->Owner)
         {
-            // Retrieve the activator type
-            unsigned int activatorType = activator->ActivatorType;
-
             // Delegate
-            switch(activatorType)
+            switch(activator->ActivatorType)
             {
                 case ACTIVATOR_TYPE_FIRE:
-                    this->Shoot();
+                    activator->Owner->Shoot();
                     break;
                 case ACTIVATOR_TYPE_BOOST:
-                    this->Boost();
+                    activator->Owner->Boost();
                     break;
             }
+        }
+        else
+        {   
+            // No need to continue
+            return false;
         }
     }
 
@@ -176,14 +180,14 @@ void Player::SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data
         // Retrieve the activator object
         Activator *activator = (Activator*) b->data;
 
-        // Check if it is our activator
-        if (activator->Owner == this)
-        {
-            // Retrieve the activator type
-            unsigned int activatorType = activator->ActivatorType;
+        // Retrieve the player object
+        Player *player = (Player*) a->data;
 
+        // Check if the right one is triggering
+        if (player == activator->Owner)
+        {
             // Delegate
-            switch(activatorType)
+            switch(activator->ActivatorType)
             {
                 case ACTIVATOR_TYPE_BOOST:
                     this->EndBoost();

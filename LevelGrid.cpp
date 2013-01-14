@@ -51,7 +51,10 @@ LevelGrid::~LevelGrid(void)
     {
         delete this->m_Activators[i];
     }
-    delete this->m_Activators;
+    if (this->m_NumActivators > 0)
+    {
+        delete this->m_Activators;
+    }
 
     // Free the physics shapes and body
     std::list<cpShape*>::const_iterator it;
@@ -112,93 +115,100 @@ void LevelGrid::InitializeLevel(void)
     // Create a vector from the list, we need direct lookup
     std::vector<Player*> players(p->begin(), p->end());
     
-    // Determine the vertical distribution for activators
-    int verticalDistribution = this->m_NumY / (players.size() * NUM_ACTIVATORS);
+    // Initialize the number of activators
+    this->m_NumActivators = 0;
 
-    // Create the activator array
-    this->m_Activators = (Activator**) malloc(sizeof(Activator*) * (this->m_NumActivators = NUM_ACTIVATORS * players.size()));
-
-    // This feels a bit hackish...
-    std::vector<std::vector<unsigned int>> activatorTypes;
-    for (int i = 0 ; i < players.size() ; ++i)
+    // Only add activators whenever there are players
+    if (players.size() > 0)
     {
-        std::vector<unsigned int> activators;
-        for (int j = 0 ; j < NUM_ACTIVATORS ; ++j)
+        // Determine the vertical distribution for activators
+        int verticalDistribution = this->m_NumY / (players.size() * NUM_ACTIVATORS);
+
+        // Create the activator array
+        this->m_Activators = (Activator**) malloc(sizeof(Activator*) * (this->m_NumActivators = NUM_ACTIVATORS * players.size()));
+
+        // This feels a bit hackish...
+        std::vector<std::vector<unsigned int>> activatorTypes;
+        for (int i = 0 ; i < players.size() ; ++i)
         {
-            activators.push_back(j);
+            std::vector<unsigned int> activators;
+            for (int j = 0 ; j < NUM_ACTIVATORS ; ++j)
+            {
+                activators.push_back(j);
+            }
+            std::random_shuffle(activators.begin(), activators.end());
+            activatorTypes.push_back(activators);
         }
-        std::random_shuffle(activators.begin(), activators.end());
-        activatorTypes.push_back(activators);
-    }
-    std::random_shuffle(activatorTypes.begin(), activatorTypes.end());
+        std::random_shuffle(activatorTypes.begin(), activatorTypes.end());
 
-    // Retrieve viewport
-    unsigned int width = this->m_Engine->GetWidth();
-    unsigned int height = this->m_Engine->GetHeight();
+        // Retrieve viewport
+        unsigned int width = this->m_Engine->GetWidth();
+        unsigned int height = this->m_Engine->GetHeight();
 
-    // Determine deltas
-    float dx = width / this->m_NumX;
-    float dy = height / this->m_NumY;
+        // Determine deltas
+        float dx = width / this->m_NumX;
+        float dy = height / this->m_NumY;
 
-    // Define the activator length list
-    ACTIVATOR_LENGTH_LIST;
+        // Define the activator length list
+        ACTIVATOR_LENGTH_LIST;
 
-    // Run through the players and then run though activators to make sure that
-    // we're never generating two activators for one player in sequence
-    int y = 0;
-    int n = 0;
-    std::vector<std::vector<unsigned int>>::const_iterator it;
-    for (int i = 0 ; i < NUM_ACTIVATORS ; ++i)
-    {
-        int k = 0;
-        for (it = activatorTypes.begin() ; it != activatorTypes.end() ; ++it)
+        // Run through the players and then run though activators to make sure that
+        // we're never generating two activators for one player in sequence
+        int y = 0;
+        int n = 0;
+        std::vector<std::vector<unsigned int>>::const_iterator it;
+        for (int i = 0 ; i < NUM_ACTIVATORS ; ++i)
         {
-            // Fetch a random int between left and right on track y
-            int x = (rand() % ((this->m_RightLevelIndices[y] - 1) - (this->m_LeftLevelIndices[y] + 1))) + (this->m_LeftLevelIndices[y] + 1);
+            int k = 0;
+            for (it = activatorTypes.begin() ; it != activatorTypes.end() ; ++it)
+            {
+                // Fetch a random int between left and right on track y
+                int x = (rand() % ((this->m_RightLevelIndices[y] - 1) - (this->m_LeftLevelIndices[y] + 1))) + (this->m_LeftLevelIndices[y] + 1);
         
-            // Fetch the activator type pointed to by i
-            unsigned int activatorType = (*it).at(i);
+                // Fetch the activator type pointed to by i
+                unsigned int activatorType = (*it).at(i);
 
-            // Offset y in some direction
-            srand(x * y);
-            int offsetY = rand() % 5;
+                // Offset y in some direction
+                srand(x * y);
+                int offsetY = rand() % 5;
             
-            if (y + offsetY >= this->m_NumY)
-            {
-                y -= offsetY;
-            }
-            else
-            {
-                y += offsetY;
-            }
+                if (y + offsetY >= this->m_NumY)
+                {
+                    y -= offsetY;
+                }
+                else
+                {
+                    y += offsetY;
+                }
 
-            // Get the selected vertex
-            hgeVector *vec = this->m_GridVertices[y][x];
+                // Get the selected vertex
+                hgeVector *vec = this->m_GridVertices[y][x];
 
-            // Create a new activator instance
-            Activator *activator = new Activator();
+                // Create a new activator instance
+                Activator *activator = new Activator();
 
-            // Set the type
-            activator->ActivatorType = activatorType;
+                // Set the type
+                activator->ActivatorType = activatorType;
 
-            // Set the owner
-            activator->Owner = players.at(k++);
+                // Set the owner
+                activator->Owner = players.at(k++);
             
-            // Define the vertices
-            activator->Vertices[0] = *vec; activator->Vertices[1] = *vec;
-            activator->Vertices[2] = *vec; activator->Vertices[3] = *vec;
+                // Define the vertices
+                activator->Vertices[0] = *vec; activator->Vertices[1] = *vec;
+                activator->Vertices[2] = *vec; activator->Vertices[3] = *vec;
 
-            // Offset the vertices conform winding
-            activator->Vertices[1].x -= dx;
-            activator->Vertices[2].x -= dx; activator->Vertices[2].y -= dy * ACTIVATOR_LENGTH_LIST_NAME[activatorType];
-            activator->Vertices[3].y -= dy * ACTIVATOR_LENGTH_LIST_NAME[activatorType];
+                // Offset the vertices conform winding
+                activator->Vertices[1].x -= dx;
+                activator->Vertices[2].x -= dx; activator->Vertices[2].y -= dy * ACTIVATOR_LENGTH_LIST_NAME[activatorType];
+                activator->Vertices[3].y -= dy * ACTIVATOR_LENGTH_LIST_NAME[activatorType];
 
-            // Add the activator
-            this->m_Activators[n++] = activator;
+                // Add the activator
+                this->m_Activators[n++] = activator;
+            }
+
+            // Increase the vertical pointer
+            y += verticalDistribution;
         }
-
-        // Increase the vertical pointer
-        y += verticalDistribution;
     }
 }
 
@@ -247,6 +257,10 @@ void LevelGrid::InitializeLevelPhysics(void)
         verts[2].x = activator->Vertices[1].x; verts[2].y = activator->Vertices[1].y;
         verts[1].x = activator->Vertices[2].x; verts[1].y = activator->Vertices[2].y;
         verts[0].x = activator->Vertices[3].x; verts[0].y = activator->Vertices[3].y;
+
+        char b[100];
+        sprintf(b, "Name: %s\n", activator->Owner->GetName().c_str());
+        OutputDebugStringA(b);
 
         // Create and add the poly shape
         cpShape *shape = cpPolyShapeNew(this->m_Body, 4, verts, cpvzero);

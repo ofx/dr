@@ -41,9 +41,9 @@ void NeoshooterBullet::Initialize(void)
     DWORD color = this->m_Owner->GetColor();
 
     // Create the player sprite
-    this->m_Sprite = new hgeSprite(this->m_Texture, 40, 40, 20, 20);
+    this->m_Sprite = new hgeSprite(this->m_Texture, 45, 45, 10, 10);
     this->m_Sprite->SetColor(color);
-	this->m_Sprite->SetHotSpot(10, 10);
+	this->m_Sprite->SetHotSpot(5, 5);
 
     // Construct the physics stuff
     {
@@ -58,7 +58,7 @@ void NeoshooterBullet::Initialize(void)
         cpBodySetPos(this->m_Body, *this->m_Position);
 
         // Create and add the poly shape
-        this->m_Shape = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 10, cpvzero));   
+        this->m_Shape = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 5, cpvzero));   
         this->m_Shape->sensor         = true;
         this->m_Shape->data           = this;
         this->m_Shape->collision_type = COLLISION_TYPE_BULLET;

@@ -12,7 +12,7 @@
 #define ACTIVATOR_TYPE_BOOST 1
 
 #define ACTIVATOR_LENGTH_LIST_NAME activatorLengthList
-#define ACTIVATOR_LENGTH_LIST      unsigned int activatorLengthList[NUM_ACTIVATORS] = {1, 3}
+#define ACTIVATOR_LENGTH_LIST      unsigned int activatorLengthList[NUM_ACTIVATORS] = {1, 4}
 
 typedef struct Activator
 {

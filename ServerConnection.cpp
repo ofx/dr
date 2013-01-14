@@ -563,6 +563,6 @@ void ServerConnection::RenderQrCode(void)
     if (this->m_IsConnected)
     {
         // Render the QR code
-        this->m_QrCodeSprite->RenderStretch(this->m_Engine->GetWidth() - 220, this->m_Engine->GetHeight() - 220, this->m_Engine->GetWidth() - 20, this->m_Engine->GetHeight() - 20);
+        this->m_QrCodeSprite->RenderStretch(this->m_Engine->GetWidth() - 180, this->m_Engine->GetHeight() - 180, this->m_Engine->GetWidth() - 20, this->m_Engine->GetHeight() - 20);
     }
 }
