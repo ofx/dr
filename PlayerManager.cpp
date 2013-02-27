@@ -27,11 +27,25 @@ Player *PlayerManager::NewPlayer(void)
 {
     static int i = 0;
 
-    // Place the new player in the center of the camera
-    //cpVect pos = this->m_World->WorldCamera->Position;
+    // Storage for the 
     cpVect pos;
-    pos.x = 400.0f;
-    pos.y = 600.0f;
+
+    // Check if we have players, if so, place the new player at displaced player (first) location,
+    // else, place the player at the default start location
+    if (this->m_Players->size() > 0)
+    {
+        // Retrieve the first player
+        Player *player = *this->m_Players->begin();
+
+        cpVect playerPosition = player->GetPosition();
+        pos.x = playerPosition.x;
+        pos.y = playerPosition.y + PLAYER_SPAWN_OFFSET_Y;
+    }
+    else
+    {
+        pos.x = DEFAULT_PLAYER_SPAWN_X;
+        pos.y = DEFAULT_PLAYER_SPAWN_Y;
+    }
 
     // Retrieve the color list
     PLAYER_COLOR_SET;
