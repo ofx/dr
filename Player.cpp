@@ -231,7 +231,7 @@ void Player::SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data
             switch(activator->ActivatorType)
             {
                 case ACTIVATOR_TYPE_BOOST:
-                    this->EndBoost();
+                    activator->Owner->EndBoost();
                     break;
             }
         }
@@ -292,6 +292,10 @@ void Player::Update(float dt)
 {
     // Fix the velocity
     this->m_Body->v = cpvmult(this->m_Body->v, this->m_Speed / cpvdist(cpVect(), this->m_Body->v));
+
+    char bb[50];
+    sprintf(bb, "Speed: %4.2f\n", this->m_Speed);
+    OutputDebugStringA(bb);
 
     // Update the position
     cpVect bv(cpBodyGetPos(this->m_Body));
