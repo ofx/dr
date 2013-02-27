@@ -293,9 +293,10 @@ void Player::Update(float dt)
     // Fix the velocity
     this->m_Body->v = cpvmult(this->m_Body->v, this->m_Speed / cpvdist(cpVect(), this->m_Body->v));
 
-    char bb[50];
-    sprintf(bb, "Speed: %4.2f\n", this->m_Speed);
-    OutputDebugStringA(bb);
+    if (this->m_Body->v.y > 0.0f)
+    {
+        this->m_Body->v = cpvneg(this->m_Body->v);
+    }
 
     // Update the position
     cpVect bv(cpBodyGetPos(this->m_Body));

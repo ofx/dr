@@ -44,8 +44,6 @@ float *PlayerManager::FindPlayerPositionCentroid(void)
 
 Player *PlayerManager::NewPlayer(void)
 {
-    static int i = 0;
-
     // Storage for the 
     cpVect pos;
 
@@ -70,7 +68,7 @@ Player *PlayerManager::NewPlayer(void)
     PLAYER_COLOR_SET;
 
     // Create the player
-    Player *player = new Player(pos, PLAYER_COLOR_SET_NAME[i++], 0, "Player");
+    Player *player = new Player(pos, PLAYER_COLOR_SET_NAME[this->m_Players->size()], this->m_Players->size(), "Player");
     this->m_Players->push_back(player);
     this->m_World->m_Objects.push_back(player);
 
