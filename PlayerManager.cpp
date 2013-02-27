@@ -28,7 +28,10 @@ Player *PlayerManager::NewPlayer(void)
     static int i = 0;
 
     // Place the new player in the center of the camera
-    cpVect pos = this->m_World->WorldCamera->Position;
+    //cpVect pos = this->m_World->WorldCamera->Position;
+    cpVect pos;
+    pos.x = 400.0f;
+    pos.y = 600.0f;
 
     // Retrieve the color list
     PLAYER_COLOR_SET;
@@ -43,13 +46,13 @@ Player *PlayerManager::NewPlayer(void)
 
 void PlayerManager::Initialize(void)
 {
-    cpVect pos;
+    /*cpVect pos;
     pos.x = 400.0f;
     pos.y = 600.0f;
 
     Player *player = new Player(pos, 0xFFFFA0FF, 0, "Player1");
     this->m_Players->push_back(player);
-    this->m_World->m_Objects.push_back(player);
+    this->m_World->m_Objects.push_back(player);*/
 }
 
 void PlayerManager::Render(float dt)

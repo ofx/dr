@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+#define MAX_BULLET_AGE 3.0f
+
 class Player;
 
 class Bullet : public PhysicsObject
@@ -13,8 +15,7 @@ protected:
 
     unsigned int m_LevelCollisionCount;
 
-    bool    m_Active;
-
+    float   m_Age;
     float   m_Speed;
 public:
     Bullet(Player *owner, cpVect directionVector = cpVect());
@@ -23,6 +24,8 @@ public:
     void InitializeBullet(void);
 
     virtual void HandleDamage(Player *player) = 0;
+
+    void Update(float dt);
 
     int BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data);
     int PreCollision(cpArbiter *arb, struct cpSpace *space, void *data);

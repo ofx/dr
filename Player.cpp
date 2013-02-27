@@ -7,8 +7,10 @@
 
 #include "Player.h"
 
-Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEED(3.5f), FRICTION(0.98f)
+Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEED(40.0f), FRICTION(0.98f)
 {
+    this->m_Active = true;
+
     this->m_Color = color;
     this->m_PlayerIndex = index;
     this->m_Name = name;
@@ -17,7 +19,7 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
 
     this->m_ActiveWeaponslot = 0;
 
-    this->m_Position = new cpVect(position);
+    this->m_Position = cpVect(position);
 
     this->m_Health = 1.0f;
 
@@ -94,7 +96,7 @@ void Player::Initialize(void)
 
         // Add the physics body
         this->m_Body = cpSpaceAddBody(space, cpBodyNew(1, moment));
-        cpBodySetPos(this->m_Body, *this->m_Position);
+        cpBodySetPos(this->m_Body, this->m_Position);
 
         // Add the physics shape
         this->m_Shape                 = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 10, cpvzero));
@@ -259,12 +261,12 @@ void Player::IncreaseHealth(float value)
 void Player::Render(float dt)
 {
 	this->m_ParticleSystem->Render();
-	this->m_Sprite->Render(this->m_Position->x, this->m_Position->y);
+	this->m_Sprite->Render(this->m_Position.x, this->m_Position.y);
 
     // Render the player's health
     this->m_Engine->GetDefaultFont()->printf(
-        this->m_Position->x + 5.0f,
-        this->m_Position->y + 5.0f,
+        this->m_Position.x + 5.0f,
+        this->m_Position.y + 5.0f,
         HGETEXT_LEFT,
         "%1.1f",
         this->m_Health
@@ -272,8 +274,8 @@ void Player::Render(float dt)
 
     // Set the world camera to follow the player
     // TODO: Follow player group
-    this->m_Engine->GetWorld()->WorldCamera->Position.x = (this->m_Engine->GetWidth() * 0.5f) - this->m_Position->x;
-    this->m_Engine->GetWorld()->WorldCamera->Position.y = (this->m_Engine->GetHeight() * 0.5f) - this->m_Position->y;
+    this->m_Engine->GetWorld()->WorldCamera->Position.x = (this->m_Engine->GetWidth() * 0.5f) - this->m_Position.x;
+    this->m_Engine->GetWorld()->WorldCamera->Position.y = (this->m_Engine->GetHeight() * 0.5f) - this->m_Position.y;
 }
 
 void Player::CycleWeapons(void)
@@ -293,7 +295,7 @@ void Player::CycleWeapons(void)
 
 inline bool Player::operator>(const Player &other) const 
 { 
-    return this->m_Position->y < other.m_Position->y;
+    return this->m_Position.y < other.m_Position.y;
 }
 
 void Player::Update(float dt)
@@ -302,12 +304,14 @@ void Player::Update(float dt)
     this->m_Body->v = cpvmult(this->m_Body->v, this->m_Speed / cpvdist(cpVect(), this->m_Body->v));
 
     // Update the position
-    this->m_Position = new cpVect(cpBodyGetPos(this->m_Body));
+    cpVect bv(cpBodyGetPos(this->m_Body));
+    this->m_Position.x = bv.x;
+    this->m_Position.y = bv.y;
 
     // Set the steering value
-    //this->m_Body->v.x = this->m_SteeringValue;
+    this->m_Body->v.x = -this->m_SteeringValue * 2.0f * dt;
 
-#ifdef _DEBUG
+//#ifdef true
         int KEY_MAP[5][3] = {
             {HGEK_LEFT, HGEK_RIGHT, HGEK_O},
             {HGEK_A,    HGEK_S,     HGEK_D}
@@ -330,7 +334,7 @@ void Player::Update(float dt)
         {
             this->CycleWeapons();
         }
-#endif
+//#endif
 
 	// Do some movement calculations and collision detection	
 	this->m_Body->v.x *= FRICTION;
@@ -340,6 +344,6 @@ void Player::Update(float dt)
     float a = abs(this->m_Body->v.x) * 50.0f;
     float b = abs(this->m_Body->v.y) * 50.0f;
 	this->m_ParticleSystem->info.nEmission = (int) (a * a + b * b);
-    this->m_ParticleSystem->MoveTo(this->m_Position->x, this->m_Position->y);
+    this->m_ParticleSystem->MoveTo(this->m_Position.x, this->m_Position.y);
 	this->m_ParticleSystem->Update(dt);
 }

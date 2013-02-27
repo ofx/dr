@@ -95,7 +95,9 @@ bool Packet::IsItemSet(std::string item)
 {
     cJSON *i = cJSON_GetObjectItem(this->m_Data, item.c_str());
 
-    return i == 0;
+    bool isset = i == 0;
+
+    return isset;
 }
 
 bool Packet::GetBoolValue(std::string item, bool &value)
@@ -115,7 +117,7 @@ bool Packet::GetIntValue(std::string item, int &value)
     if(i != 0)
     {
         value = i->valueint;
-
+        
         return true;
     }
     else
@@ -147,7 +149,7 @@ bool Packet::GetFloatValue(std::string item, float &value)
     if(i != 0)
     {
         value = i->valuedouble;
-
+        
         return true;
     }
     else
@@ -330,16 +332,34 @@ void ServerConnection::NewGame( Packet &packet )
     qrcode = QRcode_encodeString(gid.c_str(), 1, QR_ECLEVEL_L, QR_MODE_8, 0);
 
     // Create a texture
-    this->m_QrCode = this->m_Engine->GetHge()->Texture_Create(qrcode->width, qrcode->width);
+    this->m_QrCode = this->m_Engine->GetHge()->Texture_Create((qrcode->width + 2) * 4, (qrcode->width + 2) * 4);
 
     // Lock the texture
     DWORD *pix = this->m_Engine->GetHge()->Texture_Lock(this->m_QrCode, false);
 
-    for( int y = 0 ; y < qrcode->width ; ++y )
+    int n = 0;
+    for(int y = -1 ; y < (qrcode->width + 1) ; ++y)
     {
-        for( int x = 0 ; x < qrcode->width ; ++x )
+        for (int nn = 0 ; nn < 4 ; ++nn)
         {
-            pix[y * qrcode->width + x] = qrcode->data[y * qrcode->width + x] & 1 ? 0xFF000000 : 0xFFFFFFFF;
+            for(int x = -1 ; x < (qrcode->width + 1) ; ++x)
+            {
+                DWORD color;
+                if ((x > -1 && x < qrcode->width) && (y > -1 && y < qrcode->width))
+                {
+                    int i = y * qrcode->width + x;
+                    color = qrcode->data[i] & 1 ? 0xFF000000 : 0xFFFFA0FF;
+                }
+                else 
+                {
+                    color = 0xFFFFA0FF;
+                }
+
+                pix[n++] = color;
+                pix[n++] = color;
+                pix[n++] = color;
+                pix[n++] = color;
+            }
         }
     }
 
@@ -348,7 +368,7 @@ void ServerConnection::NewGame( Packet &packet )
 
     // Create a sprite for the QR code (I acknowledge the fact that this isn't quite the location to do this
     // sort of stuff)
-    this->m_QrCodeSprite = new hgeSprite(this->m_QrCode, 0, 0, qrcode->width, qrcode->width);
+    this->m_QrCodeSprite = new hgeSprite(this->m_QrCode, 0, 0, (qrcode->width + 2) * 4, (qrcode->width + 2) * 4);
 
     QRcode_free(qrcode);
 
@@ -393,7 +413,7 @@ void ServerConnection::JoinGame(Packet &packet)
     Client *client = new Client();
     client->Player = this->m_Engine->GetWorld()->GetPlayerManager()->NewPlayer();
     client->ClientId = cid;
-	this->m_Clients[cid] = new Client();
+	this->m_Clients[cid] = client;
 }
 
 void ServerConnection::DispatchClientRequest(Packet &packet)
@@ -447,8 +467,19 @@ void ServerConnection::DispatchClientUpdate(Packet &packet)
                 float x, y, z;
 	            packet.GetFloatValue("x", x); packet.GetFloatValue("y", y); packet.GetFloatValue("z", z);
                 
+                char b[100];
+                sprintf(b, "%4.2f, %4.2f, %4.2f\n", x, y, z);
+                OutputDebugStringA(b);
+
                 // Dispatch
 		        this->m_Clients[cid]->Player->SetSteeringValue(x);
+            }
+        }
+        else
+        {
+            __asm
+            {
+                int 13
             }
         }
 	}

@@ -19,6 +19,8 @@ private:
 
     bool         m_Booted;
     bool         m_IsShutdown;
+    bool         m_LockPKey;
+    bool         m_LockYKey;
 
     HGE         *m_Hge;
 

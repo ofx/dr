@@ -39,6 +39,9 @@
 // External cJSON
 #include "cJSON.h"
 
+// Muparser
+#include "muParser.h"
+
 // DroidRacers
 #include "GameObject.h"
 #include "PhysicsObject.h"

@@ -50,6 +50,9 @@
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Attributions.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />
     <SccLocalPath />
@@ -126,7 +129,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Debug\DroidRacers.exe</OutputFile>
-      <AdditionalDependencies>hge.lib;hgehelp.lib;chipmunkd.lib;%(AdditionalDependencies);qrcodelib.lib</AdditionalDependencies>
+      <AdditionalDependencies>hge.lib;hgehelp.lib;chipmunkd.lib;%(AdditionalDependencies);qrcodelib.lib;muparserd32.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -161,7 +164,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Release\DroidRacers.exe</OutputFile>
-      <AdditionalDependencies>chipmunkd.lib;hge.lib;hgehelp.lib;%(AdditionalDependencies);qrcodelib.lib</AdditionalDependencies>
+      <AdditionalDependencies>chipmunkd.lib;hge.lib;hgehelp.lib;%(AdditionalDependencies);qrcodelib.lib;muparser32.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>

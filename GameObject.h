@@ -12,7 +12,7 @@ class Engine;
 class GameObject
 {
 protected:
-    cpVect *m_Position;
+    cpVect m_Position;
 
     HGE    *m_Hge;
 
@@ -21,13 +21,9 @@ public:
     GameObject(void);
     virtual ~GameObject(void);
 
-    cpVect *GetPosition(void)
+    cpVect GetPosition(void)
     {
         return this->m_Position;
-    }
-    void SetPosition(cpVect *position)
-    {
-        this->m_Position = position;
     }
 
     virtual void Initialize(void) = 0;

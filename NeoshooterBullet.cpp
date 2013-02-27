@@ -60,7 +60,7 @@ void NeoshooterBullet::Initialize(void)
 
         // Add the physics body
         this->m_Body = cpSpaceAddBody(space, cpBodyNew(1, moment));
-        cpBodySetPos(this->m_Body, *this->m_Position);
+        cpBodySetPos(this->m_Body, this->m_Position);
 
         // Create and add the poly shape
         this->m_Shape = cpSpaceAddShape(space, cpCircleShapeNew(this->m_Body, 5, cpvzero));   
@@ -76,11 +76,13 @@ void NeoshooterBullet::Initialize(void)
 void NeoshooterBullet::Render(float dt)
 {
     // Render the bullet
-    this->m_Sprite->Render(this->m_Position->x, this->m_Position->y);
+    this->m_Sprite->Render(this->m_Position.x, this->m_Position.y);
 }
 
 void NeoshooterBullet::Update(float dt)
 {
+    Bullet::Update(dt);
+
     // Fix the velocity
     this->m_Body->v = cpvmult(this->m_Body->v, this->m_Speed / cpvdist(cpVect(), this->m_Body->v));
 
@@ -88,5 +90,5 @@ void NeoshooterBullet::Update(float dt)
     this->m_Body->v.x = this->m_DirectionVector.x * 2.2f;
 
     // Update the position
-    this->m_Position = new cpVect(cpBodyGetPos(this->m_Body));
+    this->m_Position = cpVect(cpBodyGetPos(this->m_Body));
 }

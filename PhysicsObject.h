@@ -12,6 +12,8 @@
 
 class PhysicsObject : public GameObject
 {
+protected:
+    bool m_Active;
 public:
     virtual void Initialize(void) = 0;
     virtual void Render(float dt) = 0;

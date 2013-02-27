@@ -163,7 +163,7 @@ void LevelGrid::InitializeLevel(void)
             for (it = activatorTypes.begin() ; it != activatorTypes.end() ; ++it)
             {
                 // Fetch a random int between left and right on track y
-                int x = (rand() % ((this->m_RightLevelIndices[y] - 1) - (this->m_LeftLevelIndices[y] + 1))) + (this->m_LeftLevelIndices[y] + 1);
+                int x = (rand() % ((this->m_RightLevelIndices[y] - 2) - (this->m_LeftLevelIndices[y] + 2))) + (this->m_LeftLevelIndices[y] + 2);
         
                 // Fetch the activator type pointed to by i
                 unsigned int activatorType = (*it).at(i);
@@ -284,6 +284,8 @@ void LevelGrid::InitializeLevelPhysics(void)
         cpSpaceAddStaticShape(space, shape);
         cpBodyActivateStatic(this->m_Body, shape);
         this->m_Shapes.push_back(shape);
+
+        free(verts);
     }
 }
 

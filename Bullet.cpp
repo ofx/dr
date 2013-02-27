@@ -8,6 +8,7 @@ Bullet::Bullet(Player *owner, cpVect directionVector)
     this->m_Position        = owner->GetPosition();
     this->m_DirectionVector = directionVector;
     this->m_LevelCollisionCount = 0;
+    this->m_Age                 = 0.0f;
 }
 
 Bullet::~Bullet(void)
@@ -24,6 +25,20 @@ void Bullet::InitializeBullet(void)
 
     // Set active
     this->m_Active = true;
+}
+
+void Bullet::Update(float dt)
+{
+    this->m_Age += dt;
+
+    if (this->m_Age >= MAX_BULLET_AGE)
+    {
+        // Make inactive
+        this->m_Active = false;
+
+        // Collision with the level, kill bullet
+        this->m_Engine->GetWorld()->RemoveGameObject(this);
+    }
 }
 
 int Bullet::BeginCollision(cpArbiter *arb, struct cpSpace *space, void *data)

@@ -129,7 +129,29 @@ bool Engine::FrameFunc(void)
     // Create a screenshot with P
     if (this->m_Hge->Input_GetKeyState(HGEK_P)) 
     {
-        this->m_Hge->System_Snapshot();
+        if (!this->m_LockPKey)
+        {
+            this->m_Hge->System_Snapshot();
+        }        
+
+        this->m_LockPKey = true;
+    }
+    else
+    {
+        this->m_LockPKey = false;
+    }
+    if (this->m_Hge->Input_GetKeyState(HGEK_Y))
+    {
+        if (!this->m_LockYKey)
+        {
+            this->m_World->GetPlayerManager()->NewPlayer();
+        }
+
+        this->m_LockYKey = true;
+    }
+    else
+    {
+        this->m_LockYKey = false;
     }
 
     // Get delta time
