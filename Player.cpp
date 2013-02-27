@@ -293,6 +293,7 @@ void Player::Update(float dt)
     // Fix the velocity
     this->m_Body->v = cpvmult(this->m_Body->v, this->m_Speed / cpvdist(cpVect(), this->m_Body->v));
 
+    // Force the player in the upward direction 
     if (this->m_Body->v.y > 0.0f)
     {
         this->m_Body->v = cpvneg(this->m_Body->v);
