@@ -271,11 +271,6 @@ void Player::Render(float dt)
         "%1.1f",
         this->m_Health
     );
-
-    // Set the world camera to follow the player
-    // TODO: Follow player group
-    this->m_Engine->GetWorld()->WorldCamera->Position.x = (this->m_Engine->GetWidth() * 0.5f) - this->m_Position.x;
-    this->m_Engine->GetWorld()->WorldCamera->Position.y = (this->m_Engine->GetHeight() * 0.5f) - this->m_Position.y;
 }
 
 void Player::CycleWeapons(void)
@@ -293,11 +288,6 @@ void Player::CycleWeapons(void)
     }
 }
 
-inline bool Player::operator>(const Player &other) const 
-{ 
-    return this->m_Position.y < other.m_Position.y;
-}
-
 void Player::Update(float dt)
 {
     // Fix the velocity
@@ -309,7 +299,7 @@ void Player::Update(float dt)
     this->m_Position.y = bv.y;
 
     // Set the steering value
-    this->m_Body->v.x = -this->m_SteeringValue * 2.0f * dt;
+    this->m_Body->v.x = -this->m_SteeringValue * 5.0f * dt;
 
 //#ifdef true
         int KEY_MAP[5][3] = {

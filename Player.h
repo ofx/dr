@@ -76,9 +76,6 @@ public:
     void SetSpeed(float speed);
     void SetSteeringValue(float steeringValue);
 
-    // Provide an interface to sort the ranking of players
-    bool operator>(const Player &player) const;
-
     void CycleWeapons(void);
 
     void Initialize(void);
@@ -86,5 +83,6 @@ public:
     void Update(float dt);
 
     friend class PlayerManager;
+    friend struct PlayerSort;
 };
 

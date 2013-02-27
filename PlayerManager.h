@@ -15,6 +15,14 @@
 #include <functional>
 #include <list>
 
+struct PlayerSort
+{
+    bool operator()(Player *p1, Player *p2) const
+    {
+        return p1->m_Position.y < p2->m_Position.y;
+    }
+};
+
 class PlayerManager : public GameObject
 {
 private:
@@ -32,6 +40,8 @@ public:
 
     Player *NewPlayer(void);
     Player *RemovePlayer(void);
+
+    float *FindPlayerPositionCentroid(void);
 
     void Initialize(void);
     void Render(float dt);

@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-#define MAX_BULLET_AGE 3.0f
+#define MAX_BULLET_AGE 1.0f
 
 class Player;
 

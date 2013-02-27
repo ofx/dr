@@ -23,6 +23,25 @@ PlayerManager::~PlayerManager(void)
     delete this->m_Players;
 }
 
+float *PlayerManager::FindPlayerPositionCentroid(void) 
+{
+    float centroid[2] = {0.0f, 0.0f};
+
+    std::list<Player*>::const_iterator it;
+    for (it = this->m_Players->begin() ; it != this->m_Players->end() ; ++it)
+    {
+        cpVect pos = (*it)->GetPosition();
+        centroid[0] += pos.x;
+        centroid[1] += pos.y;
+    }
+
+    float iNumPlayers = 1.0f / this->m_Players->size();
+    centroid[0] *= iNumPlayers;
+    centroid[1] *= iNumPlayers;
+
+    return centroid;
+}
+
 Player *PlayerManager::NewPlayer(void)
 {
     static int i = 0;
@@ -71,6 +90,15 @@ void PlayerManager::Initialize(void)
 
 void PlayerManager::Render(float dt)
 {
+    // Follow the first player
+    if (this->m_Players->size() > 0)
+    {
+        Player *firstPlayer = *this->m_Players->begin();
+        cpVect firstPlayerPosition = firstPlayer->GetPosition();
+
+        this->m_Engine->GetWorld()->WorldCamera->Position.x = (this->m_Engine->GetWidth() * 0.5f) - firstPlayerPosition.x;
+        this->m_Engine->GetWorld()->WorldCamera->Position.y = (this->m_Engine->GetHeight() * 0.5f) - firstPlayerPosition.y;
+    }
 }
 
 void PlayerManager::RenderText(hgeFont *font, float dt)
@@ -127,5 +155,5 @@ void PlayerManager::RenderText(hgeFont *font, float dt)
 void PlayerManager::Update(float dt)
 {
     // Determine the ranking
-    this->m_Players->sort(std::greater<Player*>());
+    this->m_Players->sort(PlayerSort());
 }
