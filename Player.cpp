@@ -14,6 +14,7 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
     this->m_Color = color;
     this->m_PlayerIndex = index;
     this->m_Name = name;
+    this->m_WarningColor = WARNING_COLOR;
 
     this->m_SteeringValue = 0.0f;
 
@@ -21,7 +22,7 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
 
     this->m_Position = cpVect(position);
 
-    this->m_Health = 1.0f;
+    this->m_Health = 0.1f;
 
     this->m_DeltaX = 0.0f;
     this->m_DeltaY = 0.0f;
@@ -129,6 +130,16 @@ void Player::TransferWeapon(Weapon *weapon)
     this->m_Weaponslots[this->m_ActiveWeaponslot] = weapon;
 }
 
+void Player::SetWarningColor(void)
+{
+    this->m_Sprite->SetColor(this->m_WarningColor);
+}
+
+void Player::SetOwnColor(void)
+{
+    this->m_Sprite->SetColor(this->m_Color);
+}
+
 void Player::Shoot(void)
 {
     // Shoot the active weapon
@@ -139,6 +150,12 @@ void Player::Boost(void)
 {
     // Increase speed
     this->m_Speed = 1.3f;
+}
+
+void Player::SetPosition(cpVect pos)
+{
+    cpBodySetPos(this->m_Body, pos);
+    this->m_Position = pos;
 }
 
 void Player::EndBoost(void)

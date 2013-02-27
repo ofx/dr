@@ -7,6 +7,8 @@
 
 #define NUM_WEAPON_SLOTS 2
 
+#define WARNING_COLOR 0xFFFF0000
+
 class cpBody;
 class cpShape;
 
@@ -26,6 +28,7 @@ private:
     cpShape *m_Shape;
 
     DWORD m_Color;
+    DWORD m_WarningColor;
 
     Weapon **m_Weaponslots;
     int m_ActiveWeaponslot;
@@ -36,6 +39,8 @@ private:
 
     float m_DeltaX;
     float m_DeltaY;
+
+    bool m_Reposition;
 
     float m_SteeringValue;
 
@@ -72,6 +77,11 @@ public:
     int PreCollision(cpArbiter *arb, struct cpSpace *space, void *data);
     void PostCollision(cpArbiter *arb, struct cpSpace *space, void *data);
     void SeparateCollision(cpArbiter *arb, struct cpSpace *space, void *data);
+
+    void SetPosition(cpVect pos);
+
+    void SetWarningColor(void);
+    void SetOwnColor(void);
 
     void SetSpeed(float speed);
     void SetSteeringValue(float steeringValue);

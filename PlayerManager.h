@@ -9,6 +9,11 @@
 #define DEFAULT_PLAYER_SPAWN_Y 600.0f
 #define PLAYER_SPAWN_OFFSET_Y  10.0f
 
+#define PLAYER_WARNING_DIST    250.0f
+#define PLAYER_REPOSITION_DIST 300.0f
+
+#define PLAYER_REPOSITION_HEALTH_DECREASE 0.15f
+
 #pragma once
 
 #include <algorithm>
@@ -39,7 +44,7 @@ public:
     }
 
     Player *NewPlayer(void);
-    Player *RemovePlayer(void);
+    void RemovePlayer(Player *player);
 
     float *FindPlayerPositionCentroid(void);
 

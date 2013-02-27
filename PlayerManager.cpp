@@ -75,6 +75,11 @@ Player *PlayerManager::NewPlayer(void)
     return player;
 }
 
+void PlayerManager::RemovePlayer(Player *player)
+{
+    this->m_Engine->GetWorld()->RemoveGameObject(player);
+}
+
 void PlayerManager::Initialize(void)
 {
     /*cpVect pos;
@@ -154,4 +159,64 @@ void PlayerManager::Update(float dt)
 {
     // Determine the ranking
     this->m_Players->sort(PlayerSort());
+
+    // Only relevant when playing with more than 1 player
+    if (this->m_Players->size() > 1)
+    {
+        cpVect firstPlayerPosition = (*this->m_Players->begin())->m_Position;
+
+        std::list<Player*> deletedPlayers;
+
+        // Check for players too far away from the first player
+        // Check for players that died
+        std::list<Player*>::const_iterator it;
+        for (it = this->m_Players->begin() ; it != this->m_Players->end() ; ++it)
+        {
+            Player *player = *it;
+            cpVect pos = player->m_Position;
+
+            // Check if we have players that died, in case, remove them from the game
+            if (player->m_Health <= 0)
+            {
+                // Player died
+                this->RemovePlayer(player);
+
+                deletedPlayers.push_back(player);
+            }
+
+            // Calculate the dist between first player and the current player (only if we're another player)
+            if (it != this->m_Players->begin())
+            {
+                float dist = cpvdist(firstPlayerPosition, pos);
+
+                // Check warning distance
+                if (dist >= PLAYER_WARNING_DIST && dist < PLAYER_REPOSITION_DIST)
+                {
+                    player->SetWarningColor();
+                }
+                // Check repositioning distance (reposition and decrease health)
+                else if (dist >= PLAYER_REPOSITION_DIST)
+                {
+                    cpVect newPos;
+                    newPos.x = firstPlayerPosition.x;
+                    newPos.y = firstPlayerPosition.y + PLAYER_SPAWN_OFFSET_Y;
+
+                    player->SetPosition(newPos);
+
+                    player->DecreaseHealth(PLAYER_REPOSITION_HEALTH_DECREASE);
+                }
+                else
+                {
+                    player->SetOwnColor();
+                }
+            }
+        }
+
+        // Delete players
+        for (it = deletedPlayers.begin() ; it != deletedPlayers.end() ; ++it)
+        {
+            this->m_Players->remove(*it);
+        }
+        deletedPlayers.clear();
+    }
 }
