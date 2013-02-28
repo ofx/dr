@@ -60,6 +60,8 @@ public:
 
     void RemoveGameObject(GameObject *object);
     void AddGameObject(GameObject *object);
+    
+    bool GameObjectExists(GameObject *object);
 
     friend class LevelGridManager;
     friend class PlayerManager;

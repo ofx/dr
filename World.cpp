@@ -91,6 +91,20 @@ void World::RenderText(hgeFont *font, float dt)
     }
 }
 
+bool World::GameObjectExists(GameObject *object)
+{
+    std::list<GameObject*>::const_iterator it;
+    for (it = this->m_Objects.begin() ; it != this->m_Objects.end() ; ++it)
+    {
+        if (object == *it)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void World::Update(float dt)
 {
     // Step through in physics world

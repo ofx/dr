@@ -112,6 +112,7 @@
       <AdditionalOptions> /QIfist </AdditionalOptions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Debug\hge_tut04.tlb</TypeLibraryName>

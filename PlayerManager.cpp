@@ -176,11 +176,9 @@ void PlayerManager::Update(float dt)
             cpVect pos = player->m_Position;
 
             // Check if we have players that died, in case, remove them from the game
-            if (player->m_Health <= 0)
+            if (player->m_Health <= 0.0f)
             {
                 // Player died
-                this->RemovePlayer(player);
-
                 deletedPlayers.push_back(player);
             }
 
