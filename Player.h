@@ -46,6 +46,8 @@ private:
 
     unsigned int m_PlayerIndex;
 
+    bool m_Dead;
+
     const float SPEED;
     const float FRICTION;
 
@@ -85,6 +87,8 @@ public:
 
     void SetSpeed(float speed);
     void SetSteeringValue(float steeringValue);
+
+    void SetDead(bool dead);
 
     void CycleWeapons(void);
 

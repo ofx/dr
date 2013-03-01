@@ -18,6 +18,8 @@ Player::Player(cpVect position, DWORD color, int index, std::string name) : SPEE
 
     this->m_SteeringValue = 0.0f;
 
+    this->m_Dead = false;
+
     this->m_ActiveWeaponslot = 0;
 
     this->m_Position = cpVect(position);
@@ -138,6 +140,11 @@ void Player::SetWarningColor(void)
 void Player::SetOwnColor(void)
 {
     this->m_Sprite->SetColor(this->m_Color);
+}
+
+void Player::SetDead(bool dead)
+{
+    this->m_Dead = dead;
 }
 
 void Player::Shoot(void)
@@ -277,6 +284,11 @@ void Player::IncreaseHealth(float value)
 
 void Player::Render(float dt)
 {
+    if (this->m_Dead)
+    {
+        return;
+    }
+
 	this->m_ParticleSystem->Render();
 	this->m_Sprite->Render(this->m_Position.x, this->m_Position.y);
 
@@ -307,6 +319,11 @@ void Player::CycleWeapons(void)
 
 void Player::Update(float dt)
 {
+    if (this->m_Dead)
+    {
+        return;
+    }
+
     // Fix the velocity
     this->m_Body->v = cpvmult(this->m_Body->v, this->m_Speed / cpvdist(cpVect(), this->m_Body->v));
 

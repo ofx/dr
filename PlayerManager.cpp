@@ -179,7 +179,10 @@ void PlayerManager::Update(float dt)
             if (player->m_Health <= 0.0f)
             {
                 // Player died
+                player->SetDead(true);
                 deletedPlayers.push_back(player);
+
+                continue;
             }
 
             // Calculate the dist between first player and the current player (only if we're another player)

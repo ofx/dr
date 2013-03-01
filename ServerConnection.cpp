@@ -467,10 +467,6 @@ void ServerConnection::DispatchClientUpdate(Packet &packet)
                 float x, y, z;
 	            packet.GetFloatValue("x", x); packet.GetFloatValue("y", y); packet.GetFloatValue("z", z);
                 
-                char b[100];
-                sprintf(b, "%4.2f, %4.2f, %4.2f\n", x, y, z);
-                OutputDebugStringA(b);
-
                 // Dispatch
 		        this->m_Clients[cid]->Player->SetSteeringValue(x);
             }
