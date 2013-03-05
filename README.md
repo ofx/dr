@@ -13,4 +13,9 @@ Gameplay inspired by Geometry Wars.
 
 ==
 
-Work in progress...
+TODO:
+
+- Fix memory leaks (the debug output on program termination will give some pointers)
+- Increase performance of levelgrid implementation (deletion of a grid causes framedrops)
+- Implement more weapons and bullets
+- Currently ships with muParser, would be cool to build weapon and bullet generation based on this library
